@@ -19,14 +19,14 @@ Additionally this effort should also help to reveal defects and missing parts in
 \chapter{Accessibility}
 Accessibility in general is a technology that helps people with disabilities to participate in essential life activities. Considering the accessibility as a part of GNOME desktop, it includes libraries and development tools allowing users with disabilities to use other options of interaction with GNOME desktop environment. Those options includes voice interfaces, screen readers and other alternative input devices.\cite{gnomeADG}
 \section{The Accessibility Toolkit (ATK)}
-Assistive technologies are receiving information from the Accessibility toolkit (ATK) which provides API built in to all GNOME widgets. Therefore, assistive technologies are able to automatically read most of the labels on screen without any extra efforts made by developers which is achieved by ATK, as it provides set of interfaces which are required to be implemented by GUI components. The interfaces are toolkit-independent, meaning that their implementation could be written for many widgets, including widgets from frameworks such as GTK\footnote{https://www.gtk.org/} and Qt\footnote{https://www.qt.io/}.
+Assistive technologies are receiving information from the Accessibility toolkit (ATK) which provides built-in API for all GNOME widgets. ATK provides a set of interfaces which are required to be implemented by GUI components. Therefore, assistive technologies are able to automatically read most of the labels on screen without any extra efforts made by developers. The interfaces are toolkit-independent, meaning that their implementation could be written for many widgets, including widgets from frameworks such as GTK\footnote{https://www.gtk.org/} and Qt\footnote{https://www.qt.io/}.
 \section{GNOME Accessibility Implementation Library (GAIL)}
-Majority of GNOME applications are written in GTK framework. The framework provides dynamically loadable module named GAIL with implementation of ATK interfaces for all GTK widgets. Once the module is loaded at runtime, the application is fully capable to cooperate with ATK without any further modifications.
-GNOME desktop does not load accessibility support libraries by default, it has to be enabled by setting a special gsettings key which can be achieved either by dconf\footnote{https://wiki.gnome.org/Projects/dconf} editor or by execution of the gsetting command in terminal:
+Majority of GNOME applications are written in GTK framework. The framework provides dynamically loadable module named GAIL implementing ATK interfaces for all GTK widgets. Once the module is loaded at runtime, the application is fully capable to cooperate with ATK without any further modifications.
+GNOME desktop does not load accessibility support libraries by default, it has to be enabled by setting a special gsettings key which can be achieved either by dconf\footnote{https://wiki.gnome.org/Projects/dconf} editor or by execution of the \texttt{gsetting} command in terminal:
 \begin{verbatim}
     gsettings get org.gnome.desktop.interface toolkit-accessibility true
 \end{verbatim}
-Additional configuration may be required for applications written in other frameworks such as QT or Java. Furthermore, implementations of other assitive technologies might be too application specific or use various techniques like OS event snooping etc. Compared to GNOME Desktop, all information required by assistive technologies (AT) are passed from GNOME Accessibility Framework to a toolkit-independent Service Provider Interface (SPI). The SPI is a key component providing stable and consistent2 API for screen readers, magnifiers, etc. Accessibility support is relying on per-toolkit implementation (GTK, QT, Java) and its APIs exported through relevant bridges to unified AT-SPI interface, as described on Diagram \ref{ATSPI_architecture}.
+Additional configuration may be required for applications written in other frameworks such as QT or Java. Furthermore, implementations of other assitive technologies might be too application specific or use various techniques like OS event snooping etc. Compared to GNOME Desktop, all information required by assistive technologies (AT) are passed from GNOME Accessibility Framework to a toolkit-independent Service Provider Interface (SPI). The SPI is a key component providing stable and consistent API for screen readers, magnifiers, etc. Accessibility support is relying on per-toolkit implementation (GTK, QT, Java) and its APIs exported through relevant bridges to unified AT-SPI interface, as described on Diagram \ref{ATSPI_architecture}.
 
 \begin{figure}[hbt]
 	\centering
@@ -35,32 +35,75 @@ Additional configuration may be required for applications written in other frame
 	\label{ATSPI_architecture}
 \end{figure}
 
-The widget is accessible, if a developer use any GTK/GNOME widget and follows the general accessibility guidelines\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-coding-guidelines.html.en} with properly implemented ATK interfaces. Considering that the stock GTK/GNOME toolkit widgets have implementations of these interfaces provided, new widgets will inherit the functionality and gain suitable accessibility support as well. There is no need to make specific code changes to provide accessibility support altought application might alter some default descriptions and improve the user experience by describing them better, especially if widget is used for some specific purpose. The ATK provides set of functions to achieve this along with the ability to make any custom component accessible\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-custom.html.en}.\cite{accessibleWidgets}
+The widget is accessible, if a developer use any GTK/GNOME widget and follows the general accessibility guidelines\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-coding-guidelines.html.en} with properly implemented ATK interfaces. Considering that the stock GTK/GNOME toolkit widgets have implementations of these interfaces provided, new widgets will inherit the functionality and gain suitable accessibility support as well. The default implementation of ATK interfaces might be altered by applications, as developers may improve their descriptions of widgets and improve the user experience in special cases when widget is used for some less expected purposes or the default description is too general. The ATK provides set of functions to achieve this along with the ability to make any custom component accessible\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-custom.html.en}.\cite{accessibleWidgets}
 
 \newpage
 \section{pyatspi}
 Package pytaspi is a Python wrapper around AT-SPI C implementation which loads the Accessibility typelib and imports the classes implementing AT-SPI interfaces.\cite{pyatspi}
 
-The mode of application provided by AT-SPI can be described as a tree of widgets starting with a root element where every sub-element represent one running application on the GNOME desktop. Each application has zero or more children, each child is distinguishable by its position in the tree and several properties including:
+AT-SPI exposes applications as a tree of widgets starting with a root element where every sub-element represent one running application on the GNOME desktop. Each application has zero or more children, each child is distinguishable by its position in the tree and several properties including:
 \begin{itemize}
-    \item name - for most widgets contains text identical with a text label visible on widget
-    \item roleName - specifies the widget type
-    \item childCount - number of sub-elements 
-    \item actions - list of available action which can be performed by accessibility
+    \item name - string value, for most widgets contains text identical with a text label visible on widget
+    \item roleName - string value, specifies the widget type
+    \item childCount - integer value, a number of sub-elements 
+    \item actions - list of strings, contains available actions which can be performed by the ATK
     \item visible - boolean value, indicated that object is visible to the user
     \item showing - boolean value, object is rendered
-    \item text -
-    \item description - contains element description for users
-    \item position - x, y coordinated on the screen (might be related to other component)
+    \item text - string value, mostly used in input fields or widgets containing plenty of text
+    \item description - string value, contains special widget description for users
+    \item position - integer tuple, x, y coordinates on the screen (might be related to other component)
 \end{itemize}
 
-Additionally, elements can be linked together in other useful ways (except parent-child relationship) where labels are linked with widgets like text fields, check boxes, combo boxes etc. These labels are making widgets easier to find or interact with. Other advantageous properties like showing or visible can be used to decide whether elements are hidden from the active screen area, thus they are not available for interaction. Role names of elements are also important as some elements are offering some widgets specific methods like selecting values for radio buttons, selecting options in combo boxes or simple click method on buttons. Access to this functionality is focused in a singleton object named registry that provides services for subscribing to specific events and as mentioned before, generating mouse and keyboard events on demand.
+Additionally, elements can be linked together in other useful ways (except parent-child relationship) where labels are linked with widgets like text fields, check boxes, combo boxes etc. These labels are making widgets easier to find or interact with. Other advantageous properties like showing or visible can be used to decide whether elements are hidden from the active screen area, thus they are not available for interaction. Role names of elements are also important as some elements are offering some widgets specific methods like selecting values in radio buttons, selecting options in combo boxes or a simple click method on push buttons. Access to this functionality is focused in a singleton object named registry that provides services for subscribing to specific events and as mentioned before, generating mouse and keyboard events on demand.
 
 pyatspi is an open source project available for most of Linux distributions via distro specific packaging services (package named python3-atspi) or can be built from its sources\footnote{https://gitlab.gnome.org/GNOME/pyatspi2}.
 
-\section{Accerciser}
-GUI tool for exploration of accessibility
+\section{Expoloring and Debugging Accesibility}
+Currently, there are several tools available for exploration and debugging accessibility features not only on GNOME desktop. 
+\subsection{dogtail}
+dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but only containing tree view of objects with their basic attributes.
+The most important Dogtail modules are:
 
+\begin{itemize}
+    \item dump - dumping tree hierarchy
+    \item predicate 
+    \item node - 
+    \item rawinput - contains implementation required for generating event from both keyboard and mouse, including more complex events like keyboard shortcut events and mouse gestures to emulate drag and drop operations  
+\end{itemize}
+
+ Testing Dogtail has proven availability for many Linux distributions through their package repositories, specifically Fedora 32, Red Hat Enterprise Linux 8.2 and Manjaro 18 with GNOME 3.34 (Archlinux). It is also available as a Pypi Python package and according to information in it's official Gitlab repository should work not only for GTK+ application but also for application written in QT and KDE4.  
+
+\subsection{Accerciser}
+Accerciser is an interactive accessibility explorer developed in Python. It provides well-arranged graphical frontend for AT-SPI library, hence it can inspect, examine and interact with widgets and also allows developers to verify that their applications are providing correct information to assistive technologies and automated testing frameworks. The default interface has three sections: A tree view with the entire desktop accessible hierarchy and two optional plugin areas. Accerciser has an extensible, plugin-based architecture, most of the features available by default are part of the following plugins: 
+
+\begin{itemize}
+    \item Interface Viewer - explorer of the AT-SPI interfaces provided by each accessible widget of a target application, after an item is selected, interfaces shown for the selected item will become sensitive, so all methods can be executed, including methods for object interaction like click and other methods for retrieving more object information. Accerciser allows to explore the following interfaces:
+    \begin{itemize}
+        \item Accessible - show child count (number of child widgets), description, states, relations and other attributes
+        \item Application - if implemented (not mandatory), it shows application ID, toolkit and version
+        \item Component - shows item's absolute position with respect to the desktop coordinate system, relative position with respect to the  window coordinate system, size, layer type, MDI-Z-order indicating the stacking order of the component and alpha
+        \item Document - shows document attributes and locale information
+        \item Hypertext - shows a list with all item's hypertext links,  including name, URI, start index and end index
+        \item Image - shows item's description, size, position and locale
+        \item Selection - shows all selectable child items of the selected item,
+        \item Streamable Content - shows selected item's content type and their corresponding URIs
+        \item Table - shows item's caption, rows, columns, number of selected rows, number of selected columns and for selected cell, it shows  it's row's and column's header extents  
+        \item Text - shows selected item's text content, that can be editable with attributes offset, justification  and possibility to show CSS formatting as well
+        \item Value shows item's value, minimum value, maximum value, minimal increment for a value 
+    \end{itemize}
+    \item AT-SPI Validator - applies tests to verify the accessibility of a target application, the validator will generate the report of the selected item and all its descendant widgets in the tree hierarchy
+    \item Event Monitor - displays AT-SPI emitted events, it also provides the filter for several different AT-SPI event classes with the ability to monitor only events sourced from selected application or selected accessible(widget), each event record contains the source and the application.
+    \item Quict Select - provides global hotkeys for quickly selecting accessible widgets in Accerciser's Application Tree View, selected widget is highlighted in the target application
+    \item API Browser - shows interfaces, methods and attributes available on each accessible widgets of a target application, by default it shows only public methods and properties, private methods and properties are hidden until checkbox \texttt{Hide Private Attributes} is unchecked
+    \item IPython Console - full, interactive Python shell with access to selected accessible widgets of a target application, use full debugging tool especially in combination with the Interface Viewer
+\end{itemize}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/accerciser.png}
+	\caption{Accerciser default configuration, Screenshot taken on Manjaro Linux with GNOME 3.34}
+	\label{Accerciser}
+\end{figure}
 
 \chapter{behave}
 \chapter{GUI TESTING}
