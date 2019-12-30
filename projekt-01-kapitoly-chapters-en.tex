@@ -61,7 +61,7 @@ pyatspi is an open source project available for most of Linux distributions via 
 \section{Expoloring and Debugging Accesibility}
 Currently, there are several tools available for exploration and debugging accessibility features not only on GNOME desktop. 
 \subsection{dogtail}
-dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but described in the next section. The tool offers less complex functionality, containing tree view of objects with their basic attributes. 
+Dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. The tool offers less complex functionality, containing tree view of objects with their basic attributes\cite{dogtail_doc}. Dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but described in the next section
 The most important dogtail framework modules are:
 
 \begin{itemize}
@@ -71,6 +71,7 @@ The most important dogtail framework modules are:
 \end{itemize}
 
  Testing Dogtail has proven availability for many Linux distributions through their package repositories, specifically Fedora 32, Red Hat Enterprise Linux 8.2 and Manjaro 18 with GNOME 3.34 (Archlinux). It is also available as a Pypi Python package and according to information in it's official Gitlab repository should work not only for GTK+ application but also for application written in QT and KDE4. 
+ 
  Dogtail testing reveals also some minor problems which might occur during the test development, to be more specific the were cases when the coordinates of a node were not reported correctly. Some items are not labelled with names like panels and lists, those are mostly items that are not as important for user interaction as their are not containing any text but they are still accessible as they are parents for other elements of the UI. Unfortunately the testing discovered also some of the important buttons to be more specific menu buttons that are nameless. Once an action needs to be dispatched on such element it is required to use its parent or sibling element for identification and for actions performed by mouse make an adjustment of the coordinates, so it can be performed on the right node. So to conclude this chaper, dogtail is powerful tool for development of automated testing but it also has it's bug and limitations. Those limitations mustn't come from the dogtail itself but it might be caused either by accessibility bugs or just not respecting the accessibility guidelines during the development of the custom widgets. 
 
 \subsection{Accerciser}
@@ -114,9 +115,13 @@ AppStream data
 \chapter{python}
 \chapter{behave}
 \chapter{verification}
-As discussed in aforementioned chapters information provided by accessibility is not flawless, therefore next couple chapters are dedicated to technologies that might be used to support the accessibility in such cases.
+As discussed in aforementioned chapters information provided by accessibility is not flawless, therefore next couple chapters are dedicated to exploration of technologies that might be used to support the accessibility in such cases.
 
-\section{opencv2 - image comparison}
+\section{OpenCV2 - image comparison}
+OpenCV or Open Source Computer Vision Library is a software library that provides optimized algorithms for computer vision and machine learning. According to official OpenCV webpage\cite{opencv}, the library contains more then 2500 algorithms and it is being developed 
+by a vast community of contributors around the world. The library is used extensively bu government institutions, research groups and companies including Microsoft, Google, IBM and many more. One of the biggest advantages is its native C++ implementation with bindings making the library available in Python, Java and Matlab and supports Linux, Android, Mac OSX and Windows. 
+
+Similarly to dogtail, OpenCV can be installed easily via python3 package manager(pip). From the rich availability of algorithms provided, an image recognition algorithm can be used to either locate of verify the presence of an element on the screen. This approach would require to have and image of the element prepared in advance, then it can be used to find the image location on the screenshot of the screen taken during a test run. Compared to verification of the node only via accessibility, this approach would also verify that the element is properly rendering on screen and the shown result is really an element that has to be shown to the user with verification of text formatting and colors. On contrary, there this process requires additional manual work of taking images, labelling them and associating them with certain test scenarios. Additionally, more complications might appear as some of the elements may be displayed on the screen multiple times which means that 
 \section{text recognition pytesseract}
 
 \section{Conclusion}
