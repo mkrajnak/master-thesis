@@ -61,17 +61,17 @@ pyatspi is an open source project available for most of Linux distributions via 
 \section{Expoloring and Debugging Accesibility}
 Currently, there are several tools available for exploration and debugging accessibility features not only on GNOME desktop. 
 \subsection{dogtail}
-dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but only containing tree view of objects with their basic attributes.
-The most important Dogtail modules are:
+dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but described in the next section. The tool offers less complex functionality, containing tree view of objects with their basic attributes. 
+The most important dogtail framework modules are:
 
 \begin{itemize}
-    \item dump - dumping tree hierarchy
-    \item predicate 
-    \item node - 
-    \item rawinput - contains implementation required for generating event from both keyboard and mouse, including more complex events like keyboard shortcut events and mouse gestures to emulate drag and drop operations  
+    \item tree - the module contains the most important class Node, instances of node class represent elements of the desktop user interface, all elements are gathered to tree structure representing all applications starting with the root element(desktop), the node class is implemented as a mixin for Accessible and various Accessible interfaces and is an important unit for it's subclasses, namely Application, Root and Window, the class also implements methods allowing to search for nodes in the tree based on certain criteria, including element properties name, rolename, showing and visible. Furthermore, it implements action methods that can be performed on the nodes without importing other modules, there is also a blink method, once it is called element is highlighted on the screen. This functionality is also part of the Sniff tool where element is highlighted after it is selected in the tree.    
+    \item dump - dumping tree of nodes as a plain text, useful for python/ipython console debugging
+    \item rawinput - contains implementation required for generating events from both keyboard and mouse, including more complex events like keyboard shortcut events and mouse gestures to emulate drag and drop operations  
 \end{itemize}
 
- Testing Dogtail has proven availability for many Linux distributions through their package repositories, specifically Fedora 32, Red Hat Enterprise Linux 8.2 and Manjaro 18 with GNOME 3.34 (Archlinux). It is also available as a Pypi Python package and according to information in it's official Gitlab repository should work not only for GTK+ application but also for application written in QT and KDE4.  
+ Testing Dogtail has proven availability for many Linux distributions through their package repositories, specifically Fedora 32, Red Hat Enterprise Linux 8.2 and Manjaro 18 with GNOME 3.34 (Archlinux). It is also available as a Pypi Python package and according to information in it's official Gitlab repository should work not only for GTK+ application but also for application written in QT and KDE4. 
+ Dogtail testing reveals also some minor problems which might occur during the test development, to be more specific the were cases when the coordinates of a node were not reported correctly. Some items are not labelled with names like panels and lists, those are mostly items that are not as important for user interaction as their are not containing any text but they are still accessible as they are parents for other elements of the UI. Unfortunately the testing discovered also some of the important buttons to be more specific menu buttons that are nameless. Once an action needs to be dispatched on such element it is required to use its parent or sibling element for identification and for actions performed by mouse make an adjustment of the coordinates, so it can be performed on the right node. So to conclude this chaper, dogtail is powerful tool for development of automated testing but it also has it's bug and limitations. Those limitations mustn't come from the dogtail itself but it might be caused either by accessibility bugs or just not respecting the accessibility guidelines during the development of the custom widgets. 
 
 \subsection{Accerciser}
 Accerciser is an interactive accessibility explorer developed in Python. It provides well-arranged graphical frontend for AT-SPI library, hence it can inspect, examine and interact with widgets and also allows developers to verify that their applications are providing correct information to assistive technologies and automated testing frameworks. The default interface has three sections: A tree view with the entire desktop accessible hierarchy and two optional plugin areas. Accerciser has an extensible, plugin-based architecture, most of the features available by default are part of the following plugins: 
@@ -114,6 +114,9 @@ AppStream data
 \chapter{python}
 \chapter{behave}
 \chapter{verification}
-\section{ATSPI}
-\section{text recognition pytesseract}
+As discussed in aforementioned chapters information provided by accessibility is not flawless, therefore next couple chapters are dedicated to technologies that might be used to support the accessibility in such cases.
+
 \section{opencv2 - image comparison}
+\section{text recognition pytesseract}
+
+\section{Conclusion}
