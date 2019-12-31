@@ -143,12 +143,23 @@ The setup process includes installation of tesseract-ocr package itself, pytesse
 
 Tesseract's OCR engine works best when used on images with clean black text with white background in a common font. Text should be approximately horizontal with the height of at least 20 pixels. Surrounding border around the text can be detected as some random text. With possibilities of image processing provided by OpenCV, the image quality in some cases need to be improved before applying text detection methods. Most common image preprocessing methods include inverting images, rescaling, binarisation, noise removal, rotation, border removal and page segmentation\footnote{https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality}.
 
-Tesseract's API for python is bundled in a module named \texttt{pytesseract}. The module provides several methods, the most important ones for the purposes of this \verb|image_to_string| and \verb|image_to_data|. Both methods have one compulsory parameter which is an image intended for text extraction. Image has to be in certain format, one of the option is to load image through OpenCV's \texttt{imread} method. Additional parameter may apply including language and engine configuration\footnote{https://pypi.org/project/pytesseract/}.
+Tesseract's API for python is bundled in a module named \texttt{pytesseract}. The module provides several methods, the most important ones for the purposes of this \verb|image_to_string| and \verb|image_to_data|. Both methods have one compulsory parameter which is an image intended for text extraction. Image has to be in certain format, one of the option is to load image through OpenCV's \texttt{imread} method. Additional parameters may be applied including language, timeout and engine configuration\footnote{https://pypi.org/project/pytesseract/}. The first method returns all recognized strings including all whitespaces and other special characters. The second method provides additional metadata about all recognized strings in a form of dictionary like object. The returned dictionary contains the following lists of properties:
+
+\begin{itemize}
+    \item text - string value, may contain string, special character, one word or line of text
+    \item left - integer value, specifies number of pixels from the left side of the image 
+    \item top - integer value, specifies number of pixels from the top of the image
+    \item width - integer value, specifies width of the recognized string 
+    \item height - integer value, specifies height of the recognized string
+    \item the rest are less important values for this work: \verb|level, page_num, block_num par_num| \verb|line_num, word_num, conf|
+\end{itemize}
+
+Therefore, occurrences of certain string in an image can be filtered and highlighted in every image as demonstrated on Figure \ref{ocr_nautilus} for string \verb|Documents|.
 
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/ocr+nautilus.png}
-	\caption{OCR detection of the Document string in Nautilus File Manager Window, Red Hat Enterprise Linux 8.2}
+	\caption{Demonstration of the OCR engine detection for the string Documents in Nautilus File Manager Window, Red Hat Enterprise Linux 8.2}
 	\label{ocr_nautilus}
 \end{figure}
 
