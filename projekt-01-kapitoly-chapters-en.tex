@@ -13,7 +13,6 @@ Modern GUI applications are being developed more rapidly with lack of proper reg
 
 manual testing vs automation clanok
 
-
 Additionally this effort should also help to reveal defects and missing parts in accessibility itself and improve the experience for users with disabilities.
 
 \chapter{Accessibility}
@@ -38,7 +37,7 @@ Additional configuration may be required for applications written in other frame
 The widget is accessible, if a developer use any GTK/GNOME widget and follows the general accessibility guidelines\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-coding-guidelines.html.en} with properly implemented ATK interfaces. Considering that the stock GTK/GNOME toolkit widgets have implementations of these interfaces provided, new widgets will inherit the functionality and gain suitable accessibility support as well. The default implementation of ATK interfaces might be altered by applications, as developers may improve their descriptions of widgets and improve the user experience in special cases when widget is used for some less expected purposes or the default description is too general. The ATK provides set of functions to achieve this along with the ability to make any custom component accessible\footnote{https://developer.gnome.org/accessibility-devel-guide/stable/gad-custom.html.en}.\cite{accessibleWidgets}
 
 \newpage
-\section{pyatspi}
+\section{Library pyatspi}
 Package pytaspi is a Python wrapper around AT-SPI C implementation which loads the Accessibility typelib and imports the classes implementing AT-SPI interfaces.\cite{pyatspi}
 
 AT-SPI exposes applications as a tree of widgets starting with a root element where every sub-element represent one running application on the GNOME desktop. Each application has zero or more children, each child is distinguishable by its position in the tree and several properties including:
@@ -58,7 +57,7 @@ Additionally, elements can be linked together in other useful ways (except paren
 
 pyatspi is an open source project available for most of Linux distributions via distro specific packaging services (package named python3-atspi) or can be built from its sources\footnote{https://gitlab.gnome.org/GNOME/pyatspi2}.
 
-\section{Expoloring and Debugging Accesibility}
+\section{Expoloring and Debugging the Accesibility}
 Currently, there are several tools available for exploration and debugging accessibility features not only on GNOME desktop. 
 \subsection{dogtail}
 Dogtail is an open source GUI test framework written in Python implemented as a library around pyatspi. Several modules implements another(higher) level of API to simplify work and interaction with accessible objects during test development. The tool offers less complex functionality, containing tree view of objects with their basic attributes\cite{dogtail_doc}. Dogtail package also includes a GUI tool Sniff, similar to the Accerciser application but described in the next section
@@ -70,12 +69,19 @@ The most important dogtail framework modules are:
     \item rawinput - contains implementation required for generating events from both keyboard and mouse, including more complex events like keyboard shortcut events and mouse gestures to emulate drag and drop operations  
 \end{itemize}
 
+ \begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/sniff.png}
+	\caption{Sniff utility highlighting icon area in Nautilus File Manager, Screenshot taken from Red Hat Enterprise Linux 8.2}
+	\label{sniff}
+\end{figure}
+
  Testing Dogtail has proven availability for many Linux distributions through their package repositories, specifically Fedora 32, Red Hat Enterprise Linux 8.2 and Manjaro 18 with GNOME 3.34 (Archlinux). It is also available as a Pypi Python package and according to information in it's official Gitlab repository should work not only for GTK+ application but also for application written in QT and KDE4. 
  
  Dogtail testing reveals also some minor problems which might occur during the test development, to be more specific the were cases when the coordinates of a node were not reported correctly. Some items are not labelled with names like panels and lists, those are mostly items that are not as important for user interaction as their are not containing any text but they are still accessible as they are parents for other elements of the UI. Unfortunately the testing discovered also some of the important buttons to be more specific menu buttons that are nameless. Once an action needs to be dispatched on such element it is required to use its parent or sibling element for identification and for actions performed by mouse make an adjustment of the coordinates, so it can be performed on the right node. So to conclude this chaper, dogtail is powerful tool for development of automated testing but it also has it's bug and limitations. Those limitations mustn't come from the dogtail itself but it might be caused either by accessibility bugs or just not respecting the accessibility guidelines during the development of the custom widgets. 
 
 \subsection{Accerciser}
-Accerciser is an interactive accessibility explorer developed in Python. It provides well-arranged graphical frontend for AT-SPI library, hence it can inspect, examine and interact with widgets and also allows developers to verify that their applications are providing correct information to assistive technologies and automated testing frameworks. The default interface has three sections: A tree view with the entire desktop accessible hierarchy and two optional plugin areas. Accerciser has an extensible, plugin-based architecture, most of the features available by default are part of the following plugins: 
+Accerciser is an interactive accessibility explorer developed in Python. It provides well-arranged graphical frontend for AT-SPI library, hence it can inspect, examine and interact with widgets and also allows developers to verify that their applications are providing correct information to assistive technologies and automated testing frameworks. The default interface has three sections: A tree view with the entire desktop accessible hierarchy and two optional plugin areas. Accerciser has an extensible, plugin-based architecture, most of the features available by default are part of the following plugins\cite{accerciser}: 
 
 \begin{itemize}
     \item Interface Viewer - explorer of the AT-SPI interfaces provided by each accessible widget of a target application, after an item is selected, interfaces shown for the selected item will become sensitive, so all methods can be executed, including methods for object interaction like click and other methods for retrieving more object information. Accerciser allows to explore the following interfaces:
@@ -106,7 +112,6 @@ Accerciser is an interactive accessibility explorer developed in Python. It prov
 	\label{Accerciser}
 \end{figure}
 
-\chapter{behave}
 \chapter{GUI TESTING}
 https://ldtp.freedesktop.org/wiki/
 https://en.wikipedia.org/wiki/Linux_Desktop_Testing_Project
@@ -114,14 +119,25 @@ https://wiki.ubuntu.com/Xpresser/
 AppStream data
 \chapter{python}
 \chapter{behave}
-\chapter{verification}
+\chapter{Verification}
 As discussed in aforementioned chapters information provided by accessibility is not flawless, therefore next couple chapters are dedicated to exploration of technologies that might be used to support the accessibility in such cases.
 
 \section{OpenCV2 - image comparison}
 OpenCV or Open Source Computer Vision Library is a software library that provides optimized algorithms for computer vision and machine learning. According to official OpenCV webpage\cite{opencv}, the library contains more then 2500 algorithms and it is being developed 
-by a vast community of contributors around the world. The library is used extensively bu government institutions, research groups and companies including Microsoft, Google, IBM and many more. One of the biggest advantages is its native C++ implementation with bindings making the library available in Python, Java and Matlab and supports Linux, Android, Mac OSX and Windows. 
+by a vast community of contributors around the world. The library is used extensively bu government institutions, research groups and companies including Microsoft, Google, IBM and many more. One of the biggest advantages is its native C++ implementation with bindings making the library available in Python, Java and Matlab and supports Linux, Android, Mac OSX and Windows. Regardless of Linux distribution, similarly to dogtail, OpenCV can be installed easily via python3 package manager(pip). 
 
-Similarly to dogtail, OpenCV can be installed easily via python3 package manager(pip). From the rich availability of algorithms provided, an image recognition algorithm can be used to either locate of verify the presence of an element on the screen. This approach would require to have and image of the element prepared in advance, then it can be used to find the image location on the screenshot of the screen taken during a test run. Compared to verification of the node only via accessibility, this approach would also verify that the element is properly rendering on screen and the shown result is really an element that has to be shown to the user with verification of text formatting and colors. On contrary, there this process requires additional manual work of taking images, labelling them and associating them with certain test scenarios. Additionally, more complications might appear as some of the elements may be displayed on the screen multiple times which means that 
-\section{text recognition pytesseract}
+From the rich availability of algorithms provided, an image recognition algorithm can be used to either locate of verify the presence of an element on the screen. This approach would require to have and image of the element prepared in advance, then it can be used to find the image location on the screenshot of the screen taken during a test run. Compared to verification of the node only via accessibility, this approach would also verify that the element is properly rendering on screen and the shown result is really an element that has to be shown to the user with verification of text formatting and colors. On contrary, there this process requires additional manual work of taking images, labelling them and associating them with certain test scenarios. Additionally, more complications might appear as some of the elements may be displayed on the screen multiple times which would make a count of items on the screen at the same time another compulsory parameter that is required to maintain. The most common example of such case are buttons labelled either OK or Cancel as they are used in many applications.
+
+Another possible approach is to use the shape recognition algorithm which can locate shapes like circles, rectangles any many other common shapes. From the development perspective this would be easier to maintain as there is no requirement for images prepared in advance(compared to image recognition algorithm) but can help with the widget location in cases where accessibility is reporting wrong coordinates. On the other hand, locating the right widget in cases when several similarly shaped ones are located on the screen at the same time will yield very inconsistent results.
+
+
+\section{OCR text recognition pytesseract}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/ocr+nautilus.png}
+	\caption{OCR detection of the Document string in Nautilus File Manager Window}
+	\label{ocr_nautilus}
+\end{figure}
 
 \section{Conclusion}
