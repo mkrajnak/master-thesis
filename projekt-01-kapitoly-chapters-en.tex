@@ -119,10 +119,10 @@ https://wiki.ubuntu.com/Xpresser/
 AppStream data
 \chapter{python}
 \chapter{behave}
-\chapter{Verification}
+\chapter{Covering Limitations of Accessibility and Verification}
 As discussed in aforementioned chapters information provided by accessibility is not flawless, therefore next couple chapters are dedicated to exploration of technologies that might be used to support the accessibility in such cases.
 
-\section{OpenCV2 - image comparison}
+\section{OpenCV - image matching}
 OpenCV or Open Source Computer Vision Library is a software library that provides optimized algorithms for computer vision and machine learning. According to official OpenCV webpage\cite{opencv}, the library contains more then 2500 algorithms and it is being developed 
 by a vast community of contributors around the world. The library is used extensively bu government institutions, research groups and companies including Microsoft, Google, IBM and many more. One of the biggest advantages is its native C++ implementation with bindings making the library available in Python, Java and Matlab and supports Linux, Android, Mac OSX and Windows. Regardless of Linux distribution, similarly to dogtail, OpenCV can be installed easily via python3 package manager(pip). 
 
@@ -166,3 +166,4 @@ Therefore, occurrences of certain string in an image can be filtered and highlig
 Similarly to OpenCV, Tesseract's OCR engine was tested as an alternative tool for location of verification of widgets which contain text. This method also verifies that the content was properly rendered and is readable for user. Preprocessing might be required for some cases, considering different text background in some applications due to different color theme or just highlighted text can cause problems for the OCR engine. Those cases can be solved by before mentioned image preprocessing methods provided by OpenCV. 
 
 \section{Conclusion}
+This chapter evaluated technologies that may be able to cover limitations and bugs in accessibility. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications and they depend on screenshots of applications that need to be taken in the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Furthermore, both technologies are working with actual appplication content rendered to users which can bring additional level of verification.
