@@ -169,13 +169,24 @@ Similarly to OpenCV, Tesseract's OCR engine was tested as an alternative tool fo
 This chapter evaluated technologies that may be able to cover limitations and bugs in accessibility. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications. Possible disadvantage is a delay caused by taking and processing screenshots of applications that have to be taken on the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application windows on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Other cases can be covered by image preprocessing done again in OpenCV. Furthermore, both technologies are working with actual application content rendered to users, possibly bringing additional level of verification.
 
 
-\chapter{GUI TESTING}
+\chapter{Testing Graphical User Interfaces}
+In general, high-level Graphical User Interface (GUI) tests and acceptance are being performed manually. Those practices are often inefficient, error prone and tedious, especially when tests are pushed and executed in a hurry during late development stages. Manual test are often pre-defined sets of steps performed on high level of system abstraction to validate system against required specification. However, a software is prone to changes and therefore the software needs to be tested against regressions. This leads to an excessive costs, since testers have to continuously re-execute test plans. To mitigate mentioned concerns and increase the end quality of software, an automated testing has been proposed as a solution. Considerable amount of work has been devoted to high-level test automation, resulting in Record and Replay techniques like Selenium\footnote{https://selenium.dev/}, TestComplete\footnote{https://smartbear.com/product/testcomplete/overview/}, etc. Tools using this technique record the coordinated an properties of GUI components during manual user interaction. Obtained recording are being played back to emulate user interaction and validate the correct state of system during the regression testing. These techniques have also certain limitations, which are typically sensitivity to GUI layout changes and code changes. Therefore, obtained recording are not applicable, with additional costs of maintaining the tests.\cite{guitesting}
+
+\section{Existing Solutions Based on Image Recognition}
+Visual GUI testing is an emerging technique combining scripting with image recognition, examples are open source tool Sikuli and commercial tool JAutomate. Image recognition allows to tests various systems regardless if their implementation, operating systems or even platform. Image recognition provides support for emulating user interaction with the bitmap components (images, buttons) shown to a user on the screen. However, the solutions based on image recognition are not suitable to be used with highly animated GUIs.
+
+\section{Existing Solutions Based on Image Recognition}
+
+\section{Record and Replay}
 https://ldtp.freedesktop.org/wiki/
 https://en.wikipedia.org/wiki/Linux_Desktop_Testing_Project
 https://wiki.ubuntu.com/Xpresser/
-AppStream data
-
-\chapter{Generated test cases - behave}
 
 \chapter{Proposed solution}
+\section{Model extraction from accessibility}
+\section{Test generation}
+\section{Test case management}
+\section{Test case execution and reports}
+\section{AppStream data}
+
 \chapter{Conclusion}
