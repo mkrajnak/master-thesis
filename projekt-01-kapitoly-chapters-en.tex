@@ -191,8 +191,14 @@ This category of solutions is often being referred to as Visual GUI Testing. It 
 
 There are several examples, including the open source tool Sikuli and commercial tool JAutomate. Trivial automation of GUIs via image matching algorithm can be achieved with a Python module named Xpresser. The tool works with a directory of images containing cropped images of widgets. Once the image matching algorithm identifies a location of cropped image on the screen, an intended action can be performed.\cite{xpresser} Xpresser is mostly used for building automated test cases for Linux distribution Ubuntu.
 
-\section{Model Based Testing}
+\section{Model-based Testing}
+Model-based testing is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. Ii allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverse the model and produce test cases suitable for automatic execution. 
 
+One of many approaches is to create an event-flow graph(EFG) as a representation of GUI model. The idea is to capture the flow of events, with possible coverage of all event interactions available in the UI.  The EFG is comprised of nodes and edges. An edge from 1 node to another means that the second note can be executed immediately after the first one. The EFT edges are not labeled and they do not have states. 
+
+Other approach uses labeled state transition systems, action words and keywords, with the goal to describe a transition model as an Labeled Transition System(LTS). An LTS consists of a set of states and a set of transitions among those states. Actions words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
+
+One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.
 \chapter{Proposed solution}
 
 \begin{figure}[hbt]
