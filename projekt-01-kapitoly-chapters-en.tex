@@ -15,7 +15,7 @@ The first chapter is focused on the architecture of accessibility technology for
 
 The next chapter is dedicated to methods and practices for testing graphical user interfaces. From advantages and disadvantages of the random input testing and manual testing methods to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
 
-Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology to the process of generation of test case files, which will be prepared to be executed repeatedly.
+Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology to the process of generation of test case files, which will be prepared to be executed repeatedly. Finally, methods for Code coverage analysis will be discussed as well. 
 
 \chapter{Accessibility}
 Accessibility in general is a technology that helps people with disabilities to participate in essential life activities. Considering the accessibility as a part of GNOME desktop, it includes libraries and development tools allowing users with disabilities to use other options of interaction with GNOME desktop environment. Those options includes voice interfaces, screen readers and other alternative input devices.\cite{gnomeADG}
@@ -191,8 +191,7 @@ Example of this category of tools is the open source project GNU Xnee. The proje
 Similar approach for testing is presented by Scrip-based frameworks. These frameworks provide scripting languages to control the GUI. Instead of performing tests manually, testers are writing scrips to automatically interact with the GUI. Scripts contain some assertions to check whether the application executed sequence of events correctly. Violations of assertions during the test results in test case failure. These tools are widely used across the industry, xamples of such tools include JFCUnit, Selenium WebDriver, Robotium, Abbot, and SOAtest.\cite{NguyenBao2014Gait}
 
 \section{Random-walk Tools}
-Unlike previously mentioned script-based and capture/replay tools, random-walk tools do not generate test cases. They just randomly walk through the GUI and randomly execute all events they encounter. These tools are easy to use and may find bugs by using unexpected combinations of events. These tools are able to reveal mostly specific tool-supported error events(e.g., crashes, timeouts, permission errors). Examples are Android Monkey\footnote{https://developer.android.com/studio/test/monkey} and GUIdancer\footnote{https://testing.bredex.de/}.
-
+Unlike previously mentioned script-based and capture/replay tools, random-walk tools do not generate test cases. They just randomly walk through the GUI and randomly execute all events they encounter. These tools are easy to use and may find bugs by using unexpected combinations of events, on the contrary, they are able to reveal only specific tool-supported error events(e.g., crashes, timeouts, permission errors). Tools using this technique are Android Monkey\footnote{https://developer.android.com/studio/test/monkey} and GUIdancer\footnote{https://testing.bredex.de/}.
 
 \section{Solutions Based on Image Recognition}
 This category of solutions is often being referred to as Visual GUI Testing. It is an emerging technique combining scripting languages with an image recognition. The image recognition allows to test various systems regardless of their implementation, operating systems or even platform. Tools are providing support for emulating user interaction with the bitmap components(images, buttons) shown to a user on the screen. The biggest limitation of solutions based on the image recognition is that they are not suitable for highly animated GUIs.\cite{guitesting}. There is also a considerable amount of work required for test maintenance, mostly caused by a design changes of widgets throughout the development.   
@@ -213,6 +212,8 @@ One of the most used solutions for designing models are Finite state machines. T
 \chapter{Proposed solution}
 A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should to able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one on the common frameworks(GTK, Qt), however this tools is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. 
 
+All application are open source and are developed by the community of enthusiasts around the GNOME project. Anyone from the community can fix bugs in applications by sending a merge request with fixes, request a new feature or propose changes with new features. Considering this model of development, there is no future planning nor phase where can can design an abstract model of an application, from which test cases can be derived. But once an application is available, a model can be derived from the AT-SPI metadata. 
+
 
 \begin{figure}[hbt]
 	\centering
@@ -221,13 +222,12 @@ A goal of this work is the development of a tool able to generate automated test
 	\label{Diagram}
 \end{figure}
 
-\section{Model extraction from accessibility}
+\section{Model Extraction}
 traversing the application online
 Many approaches in model-based testing generate test cased from a model of application, which was prepared before an actual application was developed. The
 \section{Test generation and Test Case Management}
 script -> feature -> file -> execution in the CI
 behave - git
-\section{}
 
 \section{Test case execution and reports}
 \section{Code Coverage Analysis}
