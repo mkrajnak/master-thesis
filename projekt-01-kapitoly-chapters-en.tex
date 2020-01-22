@@ -183,10 +183,16 @@ The Random input testing technique is also referred to as stochastic testing or 
 \section{Manual Testing}
 In general, high-level Graphical User Interface (GUI) and acceptance tests are being performed manually. Those practices are often inefficient, error prone and tedious, especially when tests are pushed and executed in a hurry during late development stages. Manual tests are often pre-defined sets of steps performed on high level of system abstraction to validate system against required specification. However, a software is prone to changes and therefore, the software needs to be tested regularly against regressions. This leads to an excessive costs, since testers have to continuously re-execute test plans throughout development stages.\cite{guitesting}
 
-\section{Record and Replay Tools}
-To mitigate mentioned concerns and increase the quality of a software, an automated testing has been proposed as a solution. Considerable amount of work has been devoted to high-level test automation, resulting in Record and Replay techniques. Tools are  continuously recording the coordinates and properties of GUI components during manual user interaction. Obtained recordings can be played back to emulate user interaction and validate the correct state of system during the regression testing. These techniques have also certain limitations, which is typically sensitivity to GUI layout changes and code changes. The changes are forcing testers to repeat the recording processes and therefore, they cause additional costs by maintaining automated tests. \cite{guitesting}
+\section{Record/Replay and Scripting Tools}
+To mitigate mentioned concerns and increase the quality of a software, an automated testing has been proposed as a solution. Considerable amount of work has been devoted to high-level test automation, resulting in Record and Replay techniques. Tools are  continuously recording the coordinates and properties of GUI components during manual user interaction. Obtained recordings can be played back to emulate user interaction and validate the correct state of system during the regression testing. These techniques have also certain limitations, which is typically sensitivity to GUI layout changes and code changes. The changes are forcing testers to repeat the recording processes and therefore, they cause additional costs by maintaining automated tests.\cite{guitesting} 
 
 Example of this category of tools is the open source project GNU Xnee. The project consist of library and two applications. Test automation is one of the several use cases for this project. However, the project is limited to X11 display environments.\cite{xnee}
+
+Similar approach for testing is presented by Scrip-based frameworks. These frameworks provide scripting languages to control the GUI. Instead of performing tests manually, testers are writing scrips to automatically interact with the GUI. Scripts contain some assertions to check whether the application executed sequence of events correctly. Violations of assertions during the test results in test case failure. These tools are widely used across the industry, xamples of such tools include JFCUnit, Selenium WebDriver, Robotium, Abbot, and SOAtest.\cite{NguyenBao2014Gait}
+
+\section{Random-walk Tools}
+Unlike previously mentioned script-based and capture/replay tools, random-walk tools do not generate test cases. They just randomly walk through the GUI and randomly execute all events they encounter. These tools are easy to use and may find bugs by using unexpected combinations of events. These tools are able to reveal mostly specific tool-supported error events(e.g., crashes, timeouts, permission errors). Examples are Android Monkey\footnote{https://developer.android.com/studio/test/monkey} and GUIdancer\footnote{https://testing.bredex.de/}.
+
 
 \section{Solutions Based on Image Recognition}
 This category of solutions is often being referred to as Visual GUI Testing. It is an emerging technique combining scripting languages with an image recognition. The image recognition allows to test various systems regardless of their implementation, operating systems or even platform. Tools are providing support for emulating user interaction with the bitmap components(images, buttons) shown to a user on the screen. The biggest limitation of solutions based on the image recognition is that they are not suitable for highly animated GUIs.\cite{guitesting}. There is also a considerable amount of work required for test maintenance, mostly caused by a design changes of widgets throughout the development.   
@@ -217,6 +223,7 @@ A goal of this work is the development of a tool able to generate automated test
 
 \section{Model extraction from accessibility}
 traversing the application online
+Many approaches in model-based testing generate test cased from a model of application, which was prepared before an actual application was developed. The
 \section{Test generation and Test Case Management}
 script -> feature -> file -> execution in the CI
 behave - git
