@@ -3,14 +3,19 @@
 % Authors: Michal Bidlo, Bohuslav Křena, Jaroslav Dytrych, Petr Veigend and Adam Herout 2019
 
 \chapter{Introduction}
+Majority of today's software applications feature a graphical user interface(GUI). The term GUI application or GUI software is used for an application that uses GUI as a primary interface for interaction, also called reactive systems. The visible GUI structures are made from the components, these components accept sequences of user events that alter the state of the software. The modification of state may or may not include a change to the visible GUI itself. 
+
+The testing of GUI software involves executing events belonging to GUI components and monitoring resulting changes to the program state. GUI test cases consist of event sequences as an input and some indication of a program's state. An indicator can be GUI state, memory state, error log, output log or any other indicator of runtime application state. GUI testing represents a form of system-level testing for GUI software. GUI test cases actually tests much more than the code only associated with GUI, as the events execute underlying non-GUI code. In cases where an application has no non-GUI interface, the GUI testing is the only possible form of system-level testing. This makes GUI testing a critical part of testing for any GUI software.
+
+The size and complexity of modern GUIs, in terms of components and events that may be executed on them, exceed the practical limits of exhaustive and analytical approaches to testing. The number of possible test cases for GUI increases exponentially with the number of events per test case.\cite{NguyenBao2014Gait}
 
 The goal of this work is to design and implement a tool for generating tests for GNOME desktop applications using AT-SPI metadata created as a by-product of an architecture supporting assistive technologies.
 
 The first chapter is focused on the architecture of accessibility technology for GTK/GNOME applications, including libraries, tools and applications for debugging. Further analysis contains description of accessible objects and their properties. A set of certain properties describes a state of an application, the state can be changed through various actions executable on accessible objects. After the initial analysis, the focus will be placed on evaluation of accessibility and its usage for designing automated test cases. Limitations and encountered problems are discussed with proposition of additional technologies that should provide additional level of verification. Namely, an image matching algorithms provided by an open source library OpenCV and Optical Character Recognition method designed for extraction of a text from images.
 
-The next chapter is dedicated to methods and practices for testing graphical user interfaces. Starting with advantages and disadvantages of the random input testing and manual testing methods, to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
+The next chapter is dedicated to methods and practices for testing graphical user interfaces. From advantages and disadvantages of the random input testing and manual testing methods to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
 
-Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology, to the process of generation of test case files, which will be prepared to be executed repeatedly.
+Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology to the process of generation of test case files, which will be prepared to be executed repeatedly.
 
 
 
@@ -29,7 +34,7 @@ Additional configurations may be required for applications written in other fram
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/GNOME_desktop_Accessibility.png}
-	\caption{GNOME Accessibility Architecture overview}
+	\caption{GNOME Accessibility Architecture overview\cite{gnomeADG}}
 	\label{ATSPI_architecture}
 \end{figure}
 
@@ -203,7 +208,7 @@ One of the most used solutions for designing models are Finite state machines. T
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/diagram.png}
-	\caption{Overview on Porposed Solution}
+	\caption{Overview on Proposed Solution}
 	\label{Diagram}
 \end{figure}
 
