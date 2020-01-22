@@ -17,8 +17,6 @@ The next chapter is dedicated to methods and practices for testing graphical use
 
 Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology to the process of generation of test case files, which will be prepared to be executed repeatedly.
 
-
-
 \chapter{Accessibility}
 Accessibility in general is a technology that helps people with disabilities to participate in essential life activities. Considering the accessibility as a part of GNOME desktop, it includes libraries and development tools allowing users with disabilities to use other options of interaction with GNOME desktop environment. Those options includes voice interfaces, screen readers and other alternative input devices.\cite{gnomeADG}
 \section{The Accessibility Toolkit (ATK)}
@@ -203,7 +201,12 @@ One of many approaches is to create an event-flow graph(EFG) as a representation
 Other approach uses labeled state transition systems, action words and keywords, with the goal to describe a transition model as an Labeled Transition System(LTS). An LTS consists of a set of states and a set of transitions among those states. Actions words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
 
 One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.
+
+\cite{embedded}
+
 \chapter{Proposed solution}
+A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should to able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one on the common frameworks(GTK, Qt), however this tools is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. 
+
 
 \begin{figure}[hbt]
 	\centering
@@ -213,11 +216,28 @@ One of the most used solutions for designing models are Finite state machines. T
 \end{figure}
 
 \section{Model extraction from accessibility}
-\section{Test generation}
-approaches - generating from models 
-\section{Test case management}
+traversing the application online
+\section{Test generation and Test Case Management}
+script -> feature -> file -> execution in the CI
 behave - git
+\section{}
+
 \section{Test case execution and reports}
-\section{AppStream data}
+\section{Code Coverage Analysis}
+Measurement of the code covered by the generated tests can be evaluated in two ways. 
+The first approach can be based on evaluating the percentage of model, that has been covered by the generated tests. In that case, two values need to be measured separately, to be specific a percentage of actions and a percentage of nodes covered by the generated tests.
+
+Another possibility is to use a too \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexercised code. Code coverage analysis can be characterized by the following steps: 
+\begin{itemize}
+  \item Find the areas of a program not exercised by the test suite.
+  \item Create additional test cases to exercise the dead code, thereby increasing code coverage.
+  \item Determine a quantitative measure of code coverage, which is an indirect measure of quality.
+\end{itemize}
+
+and can be used with any software written in C/C++. To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file.\cite{gcov}
+
+Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation.  
+
+
 
 \chapter{Conclusion}
