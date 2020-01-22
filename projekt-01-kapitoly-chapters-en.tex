@@ -3,17 +3,16 @@
 % Authors: Michal Bidlo, Bohuslav Křena, Jaroslav Dytrych, Petr Veigend and Adam Herout 2019
 
 \chapter{Introduction}
-importance of GUI testing, goals, regressions, errors 
 
 The goal of this work is to design and implement a tool for generating tests for GNOME desktop applications using AT-SPI metadata created as a by-product of an architecture supporting assistive technologies.
 
-The architecture expose application as a tree of accessibility objects with their current state. Every object is defined by several properties and set of actions that can be invoked to change the current state. Since accessibility support has been implemented to very fundamental layers of GTK/GNOME framework (widget level), it provides a suitable way for development of automated test suites.\cite{pyatspi2} 
+The first chapter is focused on the architecture of accessibility technology for GTK/GNOME applications, including libraries, tools and applications for debugging. Further analysis contains description of accessible objects and their properties. A set of certain properties describes a state of an application, the state can be changed through various actions executable on accessible objects. After the initial analysis, the focus will be placed on evaluation of accessibility and its usage for designing automated test cases. Limitations and encountered problems are discussed with proposition of additional technologies that should provide additional level of verification. Namely, an image matching algorithms provided by an open source library OpenCV and Optical Character Recognition method designed for extraction of a text from images.
 
-Modern GUI applications are being developed more rapidly with lack of proper regression testing. 
+The next chapter is dedicated to methods and practices for testing graphical user interfaces. Starting with advantages and disadvantages of the random input testing and manual testing methods, to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
 
-manual testing vs automation clanok
+Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology, to the process of generation of test case files, which will be prepared to be executed repeatedly.
 
-Additionally this effort should also help to reveal defects and missing parts in accessibility itself and improve the experience for users with disabilities.
+
 
 \chapter{Accessibility}
 Accessibility in general is a technology that helps people with disabilities to participate in essential life activities. Considering the accessibility as a part of GNOME desktop, it includes libraries and development tools allowing users with disabilities to use other options of interaction with GNOME desktop environment. Those options includes voice interfaces, screen readers and other alternative input devices.\cite{gnomeADG}
@@ -210,6 +209,7 @@ One of the most used solutions for designing models are Finite state machines. T
 
 \section{Model extraction from accessibility}
 \section{Test generation}
+approaches - generating from models 
 \section{Test case management}
 behave - git
 \section{Test case execution and reports}
