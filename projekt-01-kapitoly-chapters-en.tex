@@ -30,13 +30,72 @@ The size and complexity of modern GUIs, in terms of components and events that m
 
 The goal of this work is to design and implement a tool for generating tests for GNOME desktop applications using AT-SPI metadata created as a by-product of an architecture supporting assistive technologies.
 
-The first chapter is focused on the architecture of accessibility technology for GTK/GNOME applications, including libraries, tools and applications for debugging. Further analysis contains description of accessible objects and their properties. A set of certain properties describes a state of an application, the state can be changed through various actions executable on accessible objects. After the initial analysis, the focus will be placed on evaluation of accessibility and its usage for designing automated test cases. Limitations and encountered problems are discussed with proposition of additional technologies that should provide additional level of verification. Namely, an image matching algorithms provided by an open source library OpenCV and Optical Character Recognition method designed for extraction of a text from images.
+The first chapter is dedicated to methods and practices for testing graphical user interfaces. From advantages and disadvantages of the random input testing and manual testing methods to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
 
-The next chapter is dedicated to methods and practices for testing graphical user interfaces. From advantages and disadvantages of the random input testing and manual testing methods to various tools used for a development of automated test cases based on image recognition and record and replay technique. Further discussion is dedicated to a technique named Model-based testing. The technique is presented with approaches used for automated test generation. 
+The next chapter is focused on the architecture of accessibility technology for GTK/GNOME applications, including libraries, tools and applications for debugging. Further analysis contains description of accessible objects and their properties. A set of certain properties describes a state of an application, the state can be changed through various actions executable on accessible objects. After the initial analysis, the focus will be placed on evaluation of accessibility and its usage for designing automated test cases. Limitations and encountered problems are discussed with proposition of additional technologies that should provide additional level of verification. Namely, an image matching algorithms provided by an open source library OpenCV and Optical Character Recognition method designed for extraction of a text from images.
 
 Finally, the proposed solution is being discussed. Starting with the extraction of actions and states from a running application with enabled assistive technology to the process of generation of test case files, which will be prepared to be executed repeatedly. Finally, methods for Code coverage analysis will be discussed as well. 
 
-\chapter{Accessibility}
+
+
+\chapter{Testing Graphical User Interfaces}
+Graphical user interface(GUI) is an interface that makes advantage of the computer's graphics capabilities to make software easier to use.\cite{guidefinition} Graphical applications are developed using sets of windows and widgets. A widget represents a graphical element describing certain behaviour and functionality. User interaction with widgets is generating various events allowing to perform tasks in different ways and therefore achieving the same goal. Despite the fact that they improve usability and flexibility, they also represent a challenge for software testing as testers have to decide whether to check all sequences of events or only a subset. The effort required to test the GUIs can be reduced with automated software testing. Even though there was a significant progress made in automated testing tools over the last decade, manual testing is still the most common technique in practice. However, with a proper automated GUI testing process, more test cases can be executed regularly and more faults can be found within less time.\cite{patternbasedtesting} Generally, building GUI test cases involves selecting sequences of GUI events and describing the expected state of the program after event execution.\cite{NguyenBao2014Gait}
+
+Next several sections are dedicated to various testing techniques used to test GUIs. Variations of both manual and automated testing are discussed, followed by examples of tools using them.  Throughout the chapter a tested application will be referred to as a system under test(SUT).
+
+
+\section{Random Input Testing}
+The Random input testing technique is also referred to as stochastic testing or monkey testing. The term monkey is mentioned in any form of automated testing performed without any user bias. This method distinguishes 3 types of monkeys testing the application by generating random sequences of events from both a keyboard and a mouse. Dumb monkeys do not have any knowledge about the system, nor its state and they are not aware which actions are legal or illegal. The downsize is that they cannot recognize a failure when they encounter one. Their only goal is to crash the SUT. Other group, referred to as semismart monkeys, can recognize a bug when they see one. The last group are smart monkeys, who have certain knowledge about the application they are testing, obtained from a state table or a model of SUT. On the other hand, smart monkeys are the most expensive to develop. Despite the fact that a random testing tool has a weak coverage, Microsoft has reported that 10-20\% bugs in their software were discovered by a  random input testing method.\cite{nyman}
+
+\section{Manual Testing}
+In general, high-level Graphical User Interface (GUI) and acceptance tests are being performed manually. Those practices are often inefficient, error prone and tedious, especially when tests are pushed and executed in a hurry during late development stages. Manual tests are often pre-defined sets of steps performed on high level of system abstraction to validate system against required specification. However, a software is prone to changes and therefore, the software needs to be tested regularly against regressions. This leads to an excessive costs, since testers have to continuously re-execute test plans throughout development stages.\cite{guitesting}
+
+\section{Record/Replay and Scripting Tools}
+To mitigate mentioned concerns and increase the quality of a software, an automated testing has been proposed as a solution. Considerable amount of work has been devoted to high-level test automation, resulting in Record and Replay techniques. Tools are  continuously recording the coordinates and properties of GUI components during manual user interaction. Obtained recordings can be played back to emulate user interaction and validate the correct state of system during the regression testing. These techniques have also certain limitations, which is typically sensitivity to GUI layout changes and code changes. The changes are forcing testers to repeat the recording processes and therefore, they cause additional costs by maintaining automated tests.\cite{guitesting} 
+
+Example of this category of tools is the open source project GNU Xnee. The project consist of library and two applications. Test automation is one of the several use cases for this project. However, the project is limited to X11 display environments.\cite{xnee}
+
+Similar approach for testing is presented by Scrip-based frameworks. These frameworks provide scripting languages to control the GUI. Instead of performing tests manually, testers are writing scrips to automatically interact with the GUI. Scripts contain some assertions to check whether the application executed sequence of events correctly. Violations of assertions during the test results in test case failure. These tools are widely used across the industry, xamples of such tools include JFCUnit, Selenium WebDriver, Robotium, Abbot, and SOAtest.\cite{NguyenBao2014Gait}
+
+\section{Random-walk Tools}
+Unlike previously mentioned script-based and capture/replay tools, random-walk tools do not generate test cases. They just randomly walk through the GUI and randomly execute all events they encounter. These tools are easy to use and may find bugs by using unexpected combinations of events, on the contrary, they are able to reveal only specific tool-supported error events(e.g., crashes, timeouts, permission errors). Tools using this technique are Android Monkey\footnote{https://developer.android.com/studio/test/monkey} and GUIdancer\footnote{https://testing.bredex.de/}.
+
+\section{Solutions Based on Image Recognition}
+This category of solutions is often being referred to as Visual GUI Testing. It is an emerging technique combining scripting languages with an image recognition. The image recognition allows to test various systems regardless of their implementation, operating systems or even platform. Tools are providing support for emulating user interaction with the bitmap components(images, buttons) shown to a user on the screen. The biggest limitation of solutions based on the image recognition is that they are not suitable for highly animated GUIs.\cite{guitesting}. There is also a considerable amount of work required for test maintenance, mostly caused by a design changes of widgets throughout the development.   
+
+There are several examples, including the open source tool Sikuli and commercial tool JAutomate. Trivial automation of GUIs via image matching algorithm can be achieved with a Python module named Xpresser. The tool works with a directory of images containing cropped images of widgets. Once the image matching algorithm identifies a location of cropped image on the screen, an intended action can be performed.\cite{xpresser} Xpresser is mostly used for building automated test cases for Linux distribution Ubuntu.
+
+\section{Model-based Testing}
+Model-based testing(MBT) is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. It allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverses the model and produce test cases suitable for automatic execution.\cite{embedded}
+
+\subsection{Existing solutions}
+TEMA toolset is a MBT framework developed for smartphone applications. Testers have to manually create two-tier model consisting of two state machines, called action and keyword machines. Those machines represent the GUI at design and implementation levels. The method generates design-level test cases by traversing the action machine, afterwards the keyword machine is used to transform design test cases in the executable ones.\cite{TEMA}
+
+Another approach was introduced GUITAR\cite{NguyenBao2014Gait} framework for automated GUI testing. GUITAR can be divided to the following parts:
+\begin{enumerate}
+    \item GUI reverse engineering
+    \item automated test case generation
+    \item automated execution of test cases
+    \item support for platform-specific customization
+    \item support for addition of new algorithms as plugins
+    \item support for integration into other test harnesses and quality assurance workflows
+\end{enumerate}
+
+The first step contains a reverse engineering process. A structural GUI model of an application under test is extracted from the run-time state of the application. This process involves automatic execution of application, where the tool called Ripper is used to discover as much as possible about the application. The application's window and widgets are discovered in depth-first manner. The Ripper extracts properties of widgets such as position, color, size and enabled status, followed by information about events and results of event execution. The depth-first traversal terminates when all GUI windows are covered. Problem with this heuristic is that it would hypothetically contain an infinite number of ways to interact with non-trivial GUI application. At the end of the process, the Ripper stores the extracted structural information about the GUI in a data structure called GUI Tree, in XML format.
+
+To complete the reverse engineering process, a tool called Graph Converter provides a platform-independent framework to convert the GUI Tree model into a graph, representing relationships between events in the GUI of the application. The results is an Event-flow Graph used for test case generation.
+An EFG is a directed graph representing all possible event interactions on a GUI. Each node represents a GUI event. An edge from node \textit{v} to node \textit{w} represents a \verb|follows| relationship between \textit{v} and \textit{w}, indicating that event \textit{w} can be performed immediately after event \textit{v}.  An EFG is analogous to a control-flow graph, in which vertices represent program statements and edges represent execution flows between the statements.
+
+Then in step 3, test cases are automatically generated based on the EFG. Therefore, the GUI test generation problem is reduced to a problem of graph traversal. Therefore, any graph traversal algorithm can be used for test generation. 
+
+\subsection{Other GUI model representations}
+
+Other than the EFG approach is labeled state transition systems, action words and keywords with the goal to describe a transition model as the Labeled Transition System(LTS). The LTS consists of a set of states and a set of transitions among those states. Action words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
+
+One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.\cite{patternbasedtesting}
+
+
+\chapter{Accessibility Architecture}
 Accessibility in general is a technology that helps people with disabilities to participate in essential life activities. Considering the accessibility as a part of GNOME desktop, it includes libraries and development tools allowing users with disabilities to use other options of interaction with GNOME desktop environment. Those options includes voice interfaces, screen readers and other alternative input devices.\cite{gnomeADG}
 \section{The Accessibility Toolkit (ATK)}
 Assistive technologies are receiving information from the Accessibility toolkit (ATK), which offers built-in APIs for all GNOME widgets. ATK provides a set of interfaces which are required to be implemented by GUI components. Therefore, assistive technologies are able to automatically read most of the labels on screen without any extra efforts made by developers. The interfaces are toolkit-independent, meaning that their implementation could be written for many widgets, including widgets from frameworks such as GTK\footnote{https://www.gtk.org/} and Qt\footnote{https://www.qt.io/}.
@@ -141,7 +200,7 @@ Finally, plugin IPython Console provides full, interactive Python shell with acc
 
 
 \section{Covering Limitations of Accessibility and Verification}
-As discussed in aforementioned sections information provided by accessibility is not flawless, therefore next couple chapters are dedicated to exploration of technologies that might be used to support the accessibility in such cases.
+As discussed in aforementioned sections, information provided by accessibility is not flawless, therefore next couple chapters are dedicated to exploration of technologies that might be used to support the accessibility in such cases.
 
 \subsection{OpenCV and Image Matching Techniques}
 OpenCV or Open Source Computer Vision Library is a software library that provides optimized algorithms for computer vision and machine learning. According to official OpenCV webpage\cite{opencv}, the library contains more then 2500 algorithms and it is being developed 
@@ -194,64 +253,6 @@ Similarly to OpenCV, Tesseract's OCR engine was tested as an alternative tool fo
 
 \section{Conclusion}
 This chapter has been dedicated to the Accessibility technologies in GNOME desktop with a deeper look on implementation, libraries and tools for debugging. Furthermore, technologies that may be able to cover limitations and bugs in accessibility has been evaluated as well. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications. Possible disadvantage is a delay caused by taking and processing screenshots of applications that have to be taken in the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application windows on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Other cases can be covered by image preprocessing done again in OpenCV. Furthermore, both technologies are working with actual application content rendered to users, possibly bringing additional level of verification.
-
-\chapter{Testing Graphical User Interfaces}
-Graphical user interface(GUI) is an interface that makes advantage of the computer's graphics capabilities to make software easier to use.\cite{guidefinition} Graphical applications are developed using sets of windows and widgets. A widget represents a graphical element describing certain behaviour and functionality. User interaction with widgets is generating various events allowing to perform tasks in different ways and therefore achieving the same goal. Despite the fact that they improve usability and flexibility, they also represent a challenge for software testing as testers have to decide whether to check all sequences of events or only a subset. The effort required to test the GUIs can be reduced with automated software testing. Even though there was a significant progress made in automated testing tools over the last decade, manual testing is still the most common technique in practice. However, with a proper automated GUI testing process, more test cases can be executed regularly and more faults can be found within less time.\cite{patternbasedtesting} Generally, building GUI test cases involves selecting sequences of GUI events and describing the expected state of the program after event execution.\cite{NguyenBao2014Gait}
-
-Next several sections are dedicated to various testing techniques used to test GUIs. Variations of both manual and automated testing are discussed, followed by examples of tools using them.  Throughout the chapter a tested application will be referred to as a system under test(SUT).
-
-
-\section{Random Input Testing}
-The Random input testing technique is also referred to as stochastic testing or monkey testing. The term monkey is mentioned in any form of automated testing performed without any user bias. This method distinguishes 3 types of monkeys testing the application by generating random sequences of events from both a keyboard and a mouse. Dumb monkeys do not have any knowledge about the system, nor its state and they are not aware which actions are legal or illegal. The downsize is that they cannot recognize a failure when they encounter one. Their only goal is to crash the SUT. Other group, referred to as semismart monkeys, can recognize a bug when they see one. The last group are smart monkeys, who have certain knowledge about the application they are testing, obtained from a state table or a model of SUT. On the other hand, smart monkeys are the most expensive to develop. Despite the fact that a random testing tool has a weak coverage, Microsoft has reported that 10-20\% bugs in their software were discovered by a  random input testing method.\cite{nyman}
-
-\section{Manual Testing}
-In general, high-level Graphical User Interface (GUI) and acceptance tests are being performed manually. Those practices are often inefficient, error prone and tedious, especially when tests are pushed and executed in a hurry during late development stages. Manual tests are often pre-defined sets of steps performed on high level of system abstraction to validate system against required specification. However, a software is prone to changes and therefore, the software needs to be tested regularly against regressions. This leads to an excessive costs, since testers have to continuously re-execute test plans throughout development stages.\cite{guitesting}
-
-\section{Record/Replay and Scripting Tools}
-To mitigate mentioned concerns and increase the quality of a software, an automated testing has been proposed as a solution. Considerable amount of work has been devoted to high-level test automation, resulting in Record and Replay techniques. Tools are  continuously recording the coordinates and properties of GUI components during manual user interaction. Obtained recordings can be played back to emulate user interaction and validate the correct state of system during the regression testing. These techniques have also certain limitations, which is typically sensitivity to GUI layout changes and code changes. The changes are forcing testers to repeat the recording processes and therefore, they cause additional costs by maintaining automated tests.\cite{guitesting} 
-
-Example of this category of tools is the open source project GNU Xnee. The project consist of library and two applications. Test automation is one of the several use cases for this project. However, the project is limited to X11 display environments.\cite{xnee}
-
-Similar approach for testing is presented by Scrip-based frameworks. These frameworks provide scripting languages to control the GUI. Instead of performing tests manually, testers are writing scrips to automatically interact with the GUI. Scripts contain some assertions to check whether the application executed sequence of events correctly. Violations of assertions during the test results in test case failure. These tools are widely used across the industry, xamples of such tools include JFCUnit, Selenium WebDriver, Robotium, Abbot, and SOAtest.\cite{NguyenBao2014Gait}
-
-\section{Random-walk Tools}
-Unlike previously mentioned script-based and capture/replay tools, random-walk tools do not generate test cases. They just randomly walk through the GUI and randomly execute all events they encounter. These tools are easy to use and may find bugs by using unexpected combinations of events, on the contrary, they are able to reveal only specific tool-supported error events(e.g., crashes, timeouts, permission errors). Tools using this technique are Android Monkey\footnote{https://developer.android.com/studio/test/monkey} and GUIdancer\footnote{https://testing.bredex.de/}.
-
-\section{Solutions Based on Image Recognition}
-This category of solutions is often being referred to as Visual GUI Testing. It is an emerging technique combining scripting languages with an image recognition. The image recognition allows to test various systems regardless of their implementation, operating systems or even platform. Tools are providing support for emulating user interaction with the bitmap components(images, buttons) shown to a user on the screen. The biggest limitation of solutions based on the image recognition is that they are not suitable for highly animated GUIs.\cite{guitesting}. There is also a considerable amount of work required for test maintenance, mostly caused by a design changes of widgets throughout the development.   
-
-There are several examples, including the open source tool Sikuli and commercial tool JAutomate. Trivial automation of GUIs via image matching algorithm can be achieved with a Python module named Xpresser. The tool works with a directory of images containing cropped images of widgets. Once the image matching algorithm identifies a location of cropped image on the screen, an intended action can be performed.\cite{xpresser} Xpresser is mostly used for building automated test cases for Linux distribution Ubuntu.
-
-\section{Model-based Testing}
-Model-based testing(MBT) is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. It allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverses the model and produce test cases suitable for automatic execution. 
-
-\subsection{Existing solutions}
-TEMA toolset is a MBT framework developed for smartphone applications. Testers have to manually create two-tier model consisting of two state machines, called action and keyword machines. Those machines represent the GUI at design and implementation levels. The method generates design-level test cases by traversing the action machine, afterwards the keyword machine is used to transform design test cases in the executable ones.\cite{TEMA}
-
-Another approach was introduced GUITAR\cite{NguyenBao2014Gait} framework for automated GUI testing. GUITAR can be divided to the following parts:
-\begin{enumerate}
-    \item GUI reverse engineering
-    \item automated test case generation
-    \item automated execution of test cases
-    \item support for platform-specific customization
-    \item support for addition of new algorithms as plugins
-    \item support for integration into other test harnesses and quality assurance workflows
-\end{enumerate}
-
-The first step contains a reverse engineering process. A structural GUI model of an application under test is extracted from the run-time state of the application. This process involves automatic execution of application, where the tool called Ripper is used to discover as much as possible about the application. The application's window and widgets are discovered in depth-first manner. The Ripper extracts properties of widgets such as position, color, size and enabled status, followed by information about events and results of event execution. The depth-first traversal terminates when all GUI windows are covered. Problem with this heuristic is that it would hypothetically contain an infinite number of ways to interact with non-trivial GUI application. At the end of the process, the Ripper stores the extracted structural information about the GUI in a data structure called GUI Tree, in XML format.
-
-To complete the reverse engineering process, a tool called Graph Converter provides a platform-independent framework to convert the GUI Tree model into a graph, representing relationships between events in the GUI of the application. The results is an Event-flow Graph used for test case generation.
-An EFG is a directed graph representing all possible event interactions on a GUI. Each node represents a GUI event. An edge from node \textit{v} to node \textit{w} represents a \verb|follows| relationship between \textit{v} and \textit{w}, indicating that event \textit{w} can be performed immediately after event \textit{v}.  An EFG is analogous to a control-flow graph, in which vertices represent program statements and edges represent execution flows between the statements.
-
-Then in step 3, test cases are automatically generated based on the EFG. Therefore, the GUI test generation problem is reduced to a problem of graph traversal. Therefore, any graph traversal algorithm can be used for test generation. 
-
-\subsection{Other GUI model representations}
-
-Other than the EFG approach is labeled state transition systems, action words and keywords with the goal to describe a transition model as the Labeled Transition System(LTS). The LTS consists of a set of states and a set of transitions among those states. Action words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
-
-One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.\cite{patternbasedtesting}
-
-% \cite{embedded}
 
 \chapter{Proposed solution}
 A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should be able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one of the common frameworks(GTK, Qt), however this tool is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. A tool will be developed in language Python3, version 3.6.
@@ -341,4 +342,8 @@ Comparing results measured by the \verb|gcov| should provide a suitable method f
 
 
 \chapter{Conclusion}
-The initial part of this work was dedicated to the architecture of the assistive technologies in GNOME environment. 
+The initial part of this work was dedicated to the topic of testing the GUIs. Several widely used approaches were discussed and concluded by the Model-based testing, which will be used for development of this work.
+
+The architecture of the assistive technologies in GNOME environment are discussed as well. Several tools used for exploration, verification and extraction of accessibility metadata were described, including Python libraries dogtail and pyatspi. Metadata used by assistive technologies are providing complex information about running applications and they are already being used in various testing frameworks. Limitation of accessibility might be partially solved by the computer vision algorithms, mainly OCR. These tools also provide additional level of verification of content displayed during testing.
+
+Final chapter is dedicated to the proposed solution. A tool written in Python3, with ability to extract an abstract model application from metadata provided by accessibility in GNOME environment. The tool afterwards converts the model to the Event-flow graph and generates test cases suitable for automated execution. The chapter also revealed test case management with several challenges that need to be addressed to provide reliable results.  
