@@ -222,7 +222,7 @@ Model-based testing is a software testing technique where test cases are generat
 
 \subsection{GUI model representation}
 
-One of many approaches is to create an event-flow graph(EFG) as a representation of GUI model. The idea is to capture the flow of events, with possible coverage of all event interactions available in the UI.  The EFG is comprised of nodes and edges. An edge from 1 node to another means that the second note can be executed immediately after the first one. The EFT edges are not labeled and they do not have states. 
+One of many approaches is to create an event-flow graph(EFG) as a representation of GUI model. The idea is to capture the flow of events, with possible coverage of all event interactions available in the UI.  The EFG is comprised of nodes and edges. An edge from 1 node to another means that the second node can be executed immediately after the first one. The EFT edges are not labeled and they do not have states. 
 
 Other approach uses labeled state transition systems, action words and keywords, with the goal to describe a transition model as an Labeled Transition System(LTS). An LTS consists of a set of states and a set of transitions among those states. Actions words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
 
@@ -236,37 +236,74 @@ online vs offline
 \cite{embedded}
 
 \chapter{Proposed solution}
-A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should to able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one on the common frameworks(GTK, Qt), however this tools is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. 
+A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should to able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one on the common frameworks(GTK, Qt), however this tools is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. A tool will be developed in language Python3, version 3.6.
 
 All application are open source and are developed by the community of enthusiasts around the GNOME project. Anyone from the community can fix bugs in applications by sending a merge request with fixes, request a new feature or propose changes with new features. Considering this model of development, there is no future planning nor phase where can can design an abstract model of an application, from which test cases can be derived. But once an application is available, a model can be derived from the AT-SPI metadata. 
-
 
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/diagram.png}
-	\caption{Overview on Proposed Solution}
+	\caption{Architecture of Proposed Solution}
 	\label{Diagram}
 \end{figure}
 
-\section{Model Extraction}
+
+\section{Model Extraction and Test Generation}
 traversing the application online
-Many approaches in model-based testing generate test cased from a model of application, which was prepared before an actual application was developed. The
+Many approaches in model-based testing generate test cases from an model of an application, which had been prepared before an actual application was developed. However, for the purposes of this work generation of an abstract model will be skipped and it will rely on the metadata provided by the AT-SPI. 
 
-\section{Test generation and Test Case Management}
-Result of the test generation process will be a set of \verb|.feature| files describing test cases in language Gherkin. The test cases will be executable in Python's test framework behave. 
+The generation process will work with live application at run-time. It will perform actions to generate sequences of actions which will form test cases. There are several challenges which needs to be addressed during the development process. Theoretically, there will be an infinite amount of sequences of action executed, which can be ineffective. Therefore a maximum amount of actions in one test case needs to be determined. 
 
-behave is one of the most popular BDD frameworks in Python. It's similar to other Gherkin-based frameworks despite not holding the official Cucumber designation. It has two primary layers:
+Furthermore, there will be sequences which will lead to the expected termination of application. These sequences must be detected by checking keywords \textit{Quit} or \textit{Exit}. These steps must also be followed by assertion that application was terminated successfully, without errors. 
+
+A vital part of the generated tests will be assertion of the state of application. At first, it has to be decided which accessibility properties will be checked after execution of actions. One possible approach is to generate assertion for one or multiple nodes which were changed by the executed actions. To make assertions more reliable, the OCR technology can be used to checked text rendered on the screen. Through accessibility, we can extract the text of the node that has changed the state(both \verb|visible| and \verb|showing| properties set to \verb|True|). Then, take a screen shot of the running application and finally, verify that the text is shown on the screen. 
+In general, 
+
+\begin{enumerate}
+    \item\label{one} application is running, extract an accessibility tree
+    \item filter visible nodes from the tree 
+    \item obtain a list of executable actions on visible nodes from previous step
+    \item if a tuple(node, action) is listed in already executed action queue, filter it out  
+    \item put filtered executable actions and nodes to the execution queue
+    \item take the first action from the execution queue, execute it
+    \item append executed steps to .feature file 
+    \item check if the application is still running, check stdout, stderr
+    \item continue from step \ref{one}.
+\end{enumerate}
+
+Test cases will be derived from the application at run-time, meaning that the state of accessible objects in the application will be scanned for possible actions that can be performed on shown nodes. A list of tuples 
+
+\section{Test Cases and Test Reports}
+Result of the test generation process will be a set of \verb|.feature| files describing test cases in language Gherkin\footnote{https://automationpanda.com/2017/01/26/bdd-101-the-gherkin-language/}. The test cases will be executable in Python's test framework behave. 
+
+Behave is one of the most popular BDD\footnote{https://automationpanda.com/bdd/} frameworks in Python. Behavior in tests is expressed in semi-formal language, which provides better clarity about tests for people without technical background.\cite{pythonframeworks} It's similar to other Gherkin-based frameworks despite not holding the official Cucumber\footnote{https://cucumber.io/} designation. It has two primary layers:
 \begin{enumerate}
     \item Behavior specs written in Gherkin .feature files
     \item Step definitions and hooks written in Python modules that implement Gherkin steps
 \end{enumerate}
 
+\begin{lstlisting}[language=Gherkin,,xleftmargin=3.5ex,caption={.feature file example with a test case},label={feature}]
+
+Feature: Start and stop baobab in different ways
+
+  @startViaCommand
+  Scenario: Start via command
+    Given Start baobab via command in session
+    Then baobab should start
+\end{lstlisting}
+
+A test scenario written in language Gherking uses the Given-When-Then format. Each step in a \verb|.feature| file is a decorator to a Python function, which is executed when behave runs the test.\cite{bdd} A step can either contain a description of an action to be performed or an assertion to check verify the actions performed by the test. As shown on example \ref{feature} , test case written in behave is intuitive and easy to understand, which is important for quick re-evaluation of failed test cases. The result of the test execution is an HTML test report \ref{behave_report}.
 
 
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/behave_report.png}
+	\caption{HTML test report of the executed test defined in .feature file\ref{feature}}
+	\label{behave_report}
+\end{figure}
 
-A test case written in behave is intuitive and easy to understand, which is important for quick re-evaluation of failed test cases.  
+Since tests are generated in a form of executable scripts, the test cases will be managed through versioning system git. Each application should have a separate repository for the tests. Git offers branching support\footnote{https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell}, which allows to maintain tests for multiple version of applications. When a new version of application with major changes is released, a new test cases covering new features will be generated to a new branch, tagged with the corresponding version number. This should be also advantage when tests will be deployed in CI/CD systems. The test executor will clone the repository with the branch corresponding to the version of the application. After finish of the test execution process, the result are collected as a HTML file. 
 
-\section{Test case execution and reports}
 \section{Code Coverage Analysis}
 Measurement of the code covered by the generated tests can be evaluated in two ways. 
 The first approach can be based on evaluating the percentage of model, that has been covered by the generated tests. In that case, two values need to be measured separately, to be specific a percentage of actions and a percentage of nodes covered by the generated tests.
@@ -282,25 +319,6 @@ Another possibility is to use a too \verb|gcov|, which is standart part of the G
 To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file. Measurements can be obtained for any software written in C/C++\cite{gcov}
 
 Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation. However, event coverage should be more important for GUI applications.
-
-\begin{lstlisting}[language=Gherkin,,xleftmargin=3.5ex,caption={.feature file example with a test case}]
-
-Feature: Start and stop baobab in different ways
-
-  @startViaCommand
-  Scenario: Start via command
-    Given Start baobab via command in session
-    Then baobab should start
-\end{lstlisting}\label{feature}
-
-
-\begin{figure}[hbt]
-	\centering
-	\includegraphics[width=1\textwidth]{obrazky-figures/behave_report.png}
-	\caption{HTML test report of the executed test defined in .feature file\ref{feature}}
-	\label{behave_report}
-\end{figure}
-
 
 
 \chapter{Conclusion}
