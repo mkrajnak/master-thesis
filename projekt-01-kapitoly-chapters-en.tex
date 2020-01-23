@@ -2,6 +2,25 @@
 %=========================================================================
 % Authors: Michal Bidlo, Bohuslav Křena, Jaroslav Dytrych, Petr Veigend and Adam Herout 2019
 
+\lstdefinelanguage{Gherkin}{
+	morekeywords = {
+		Given,
+		When,
+		Then,
+		And,
+		Scenario,
+		Feature,
+		But,
+		Background,
+		Scenario Outline,
+		Examples
+	},
+	sensitive=true,
+	morecomment=[l]{\#},
+	morestring=[b]",
+	morestring=[b]'
+}
+
 \chapter{Introduction}
 Majority of today's software applications feature a graphical user interface(GUI). The term GUI application or GUI software is used for an application that uses GUI as a primary interface for interaction, also called reactive systems. The visible GUI structures are made from the components, these components accept sequences of user events that alter the state of the software. The modification of state may or may not include a change to the visible GUI itself. 
 
@@ -214,8 +233,6 @@ online vs offline
 \subsection{Existing solutions}
 
 
-
-
 \cite{embedded}
 
 \chapter{Proposed solution}
@@ -234,9 +251,20 @@ All application are open source and are developed by the community of enthusiast
 \section{Model Extraction}
 traversing the application online
 Many approaches in model-based testing generate test cased from a model of application, which was prepared before an actual application was developed. The
+
 \section{Test generation and Test Case Management}
-script -> feature -> file -> execution in the CI
-behave - git
+Result of the test generation process will be a set of \verb|.feature| files describing test cases in language Gherkin. The test cases will be executable in Python's test framework behave. 
+
+behave is one of the most popular BDD frameworks in Python. It's similar to other Gherkin-based frameworks despite not holding the official Cucumber designation. It has two primary layers:
+\begin{enumerate}
+    \item Behavior specs written in Gherkin .feature files
+    \item Step definitions and hooks written in Python modules that implement Gherkin steps
+\end{enumerate}
+
+
+
+
+A test case written in behave is intuitive and easy to understand, which is important for quick re-evaluation of failed test cases.  
 
 \section{Test case execution and reports}
 \section{Code Coverage Analysis}
@@ -245,15 +273,33 @@ The first approach can be based on evaluating the percentage of model, that has 
 Measuring coverage of action is a common technique used in GUI testing known as event coverage.\cite{NguyenBao2014Gait}
 
 Another possibility is to use a too \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexecuted code. Code coverage analysis can be characterized by the following steps: 
-\begin{itemize}
+\begin{enumerate}
   \item Find the areas of a program not exercised by the test suite.
   \item Create additional test cases to exercise the dead code, thereby increasing code coverage.
   \item Determine a quantitative measure of code coverage, which is an indirect measure of quality.
-\end{itemize}
+\end{enumerate}
 
 To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file. Measurements can be obtained for any software written in C/C++\cite{gcov}
 
 Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation. However, event coverage should be more important for GUI applications.
+
+\begin{lstlisting}[language=Gherkin,,xleftmargin=3.5ex,caption={.feature file example with a test case}]
+
+Feature: Start and stop baobab in different ways
+
+  @startViaCommand
+  Scenario: Start via command
+    Given Start baobab via command in session
+    Then baobab should start
+\end{lstlisting}\label{feature}
+
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/behave_report.png}
+	\caption{HTML test report of the executed test defined in .feature file\ref{feature}}
+	\label{behave_report}
+\end{figure}
 
 
 
