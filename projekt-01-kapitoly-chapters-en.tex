@@ -164,7 +164,17 @@ The setup process includes installation of tesseract-ocr package itself, pytesse
 
 Tesseract's OCR engine works best when used with images containing black text on white background in a common font. Text should be approximately horizontal with the height of at least 20 pixels. Surrounding borders around the text can be detected as some random text. With possibilities of image processing provided by OpenCV, the image quality in some cases needs to be improved before applying text detection methods. Most common image preprocessing methods include inverting images, rescaling, binarisation, noise removal, rotation, border removal and page segmentation\footnote{https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality}.
 
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/ocr+nautilus.png}
+	\caption{Demonstration of the OCR engine detection for the string Documents in Nautilus File Manager window, Red Hat Enterprise Linux 8.2}
+	\label{ocr_nautilus}
+\end{figure}
+\bigskip
+
 Tesseract's API for python is bundled in a module named \texttt{pytesseract}. The module provides several methods, the most important ones for the purposes of this work are \verb|image_to_string| and \verb|image_to_data|. Both methods have one compulsory parameter which is an image intended for text extraction. An image has to be in certain format, one of the options is to load the image through OpenCV's \texttt{imread} method. Additional parameters may be applied including language, timeout and engine configuration\footnote{https://pypi.org/project/pytesseract/}. The first method returns all recognized strings including all whitespaces and other special characters. The second method provides additional metadata about all recognized strings in a form of dictionary like object. The returned dictionary contains the following lists of properties:
+
+
 
 \begin{itemize}
     \item text - string value, may contain string, special character, one word or line of text
@@ -176,19 +186,14 @@ Tesseract's API for python is bundled in a module named \texttt{pytesseract}. Th
     \verb| line_num, word_num, conf|
 \end{itemize}
 
-Therefore, occurrences of certain string in an image are filtered and highlighted in every image as demonstrated on Figure \ref{ocr_nautilus} for string \textit{Documents}.
 
-\begin{figure}[hbt]
-	\centering
-	\includegraphics[width=1\textwidth]{obrazky-figures/ocr+nautilus.png}
-	\caption{Demonstration of the OCR engine detection for the string Documents in Nautilus File Manager window, Red Hat Enterprise Linux 8.2}
-	\label{ocr_nautilus}
-\end{figure}
+
+Therefore, occurrences of certain string in an image are filtered and highlighted in every image as demonstrated on Figure \ref{ocr_nautilus} for string \textit{Documents}.
 
 Similarly to OpenCV, Tesseract's OCR engine was tested as an alternative tool for location or verification of widgets which contain text. This method also verifies that the content was properly rendered and is readable for user. OCR systems have limitations and work with certain margin of error which is a fact that also applies to Tesseract. Various applications can use different color schemes including background colors and font colors, input fields and labels. Highlighting elements to perform actions on them can also lead to changes of these conditions. Image preprocessing methods provided by OpenCV can aid to avoiding problems associated with those cases, namely color inversion and binarisation. Those methods would supply Tesseract's engine with an image containing black text and white background for evaluation.
 
 \section{Conclusion}
-This chapter has been dedicated to the Accessibility technologies in GNOME desktop with a deeper look on implementation, libraries and tools for debugging. Furthermore, technologies that may be able to cover limitations and bugs in accessibility has been evaluated as well. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications. Possible disadvantage is a delay caused by taking and processing screenshots of applications that have to be taken on the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application windows on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Other cases can be covered by image preprocessing done again in OpenCV. Furthermore, both technologies are working with actual application content rendered to users, possibly bringing additional level of verification.
+This chapter has been dedicated to the Accessibility technologies in GNOME desktop with a deeper look on implementation, libraries and tools for debugging. Furthermore, technologies that may be able to cover limitations and bugs in accessibility has been evaluated as well. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications. Possible disadvantage is a delay caused by taking and processing screenshots of applications that have to be taken in the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application windows on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Other cases can be covered by image preprocessing done again in OpenCV. Furthermore, both technologies are working with actual application content rendered to users, possibly bringing additional level of verification.
 
 \chapter{Testing Graphical User Interfaces}
 Graphical user interface(GUI) is an interface that makes advantage of the computer's graphics capabilities to make software easier to use.\cite{guidefinition} Graphical applications are developed using sets of windows and widgets. A widget represents a graphical element describing certain behaviour and functionality. User interaction with widgets is generating various events allowing to perform tasks in different ways and therefore achieving the same goal. Despite the fact that they improve usability and flexibility, they also represent a challenge for software testing as testers have to decide whether to check all sequences of events or only a subset. The effort required to test the GUIs can be reduced with automated software testing. Even though there was a significant progress made in automated testing tools over the last decade, manual testing is still the most common technique in practice. However, with a proper automated GUI testing process, more test cases can be executed regularly and more faults can be found within less time.\cite{patternbasedtesting} Generally, building GUI test cases involves selecting sequences of GUI events and describing the expected state of the program after event execution.\cite{NguyenBao2014Gait}
@@ -218,27 +223,40 @@ This category of solutions is often being referred to as Visual GUI Testing. It 
 There are several examples, including the open source tool Sikuli and commercial tool JAutomate. Trivial automation of GUIs via image matching algorithm can be achieved with a Python module named Xpresser. The tool works with a directory of images containing cropped images of widgets. Once the image matching algorithm identifies a location of cropped image on the screen, an intended action can be performed.\cite{xpresser} Xpresser is mostly used for building automated test cases for Linux distribution Ubuntu.
 
 \section{Model-based Testing}
-Model-based testing is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. It allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverse the model and produce test cases suitable for automatic execution. 
+Model-based testing(MBT) is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. It allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverses the model and produce test cases suitable for automatic execution. 
 
-\subsection{GUI model representation}
+\subsection{Existing solutions}
+TEMA toolset is a MBT framework developed for smartphone applications. Testers have to manually create two-tier model consisting of two state machines, called action and keyword machines. Those machines represent the GUI at design and implementation levels. The method generates design-level test cases by traversing the action machine, afterwards the keyword machine is used to transform design test cases in the executable ones.\cite{TEMA}
 
-One of many approaches is to create an event-flow graph(EFG) as a representation of GUI model. The idea is to capture the flow of events, with possible coverage of all event interactions available in the UI.  The EFG is comprised of nodes and edges. An edge from 1 node to another means that the second node can be executed immediately after the first one. The EFT edges are not labeled and they do not have states. 
+Another approach was introduced GUITAR\cite{NguyenBao2014Gait} framework for automated GUI testing. GUITAR can be divided to the following parts:
+\begin{enumerate}
+    \item GUI reverse engineering
+    \item automated test case generation
+    \item automated execution of test cases
+    \item support for platform-specific customization
+    \item support for addition of new algorithms as plugins
+    \item support for integration into other test harnesses and quality assurance workflows
+\end{enumerate}
 
-Other approach uses labeled state transition systems, action words and keywords, with the goal to describe a transition model as an Labeled Transition System(LTS). An LTS consists of a set of states and a set of transitions among those states. Actions words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
+The first step contains a reverse engineering process. A structural GUI model of an application under test is extracted from the run-time state of the application. This process involves automatic execution of application, where the tool called Ripper is used to discover as much as possible about the application. The application's window and widgets are discovered in depth-first manner. The Ripper extracts properties of widgets such as position, color, size and enabled status, followed by information about events and results of event execution. The depth-first traversal terminates when all GUI windows are covered. Problem with this heuristic is that it would hypothetically contain an infinite number of ways to interact with non-trivial GUI application. At the end of the process, the Ripper stores the extracted structural information about the GUI in a data structure called GUI Tree, in XML format.
+
+To complete the reverse engineering process, a tool called Graph Converter provides a platform-independent framework to convert the GUI Tree model into a graph, representing relationships between events in the GUI of the application. The results is an Event-flow Graph used for test case generation.
+An EFG is a directed graph representing all possible event interactions on a GUI. Each node represents a GUI event. An edge from node \textit{v} to node \textit{w} represents a \verb|follows| relationship between \textit{v} and \textit{w}, indicating that event \textit{w} can be performed immediately after event \textit{v}.  An EFG is analogous to a control-flow graph, in which vertices represent program statements and edges represent execution flows between the statements.
+
+Then in step 3, test cases are automatically generated based on the EFG. Therefore, the GUI test generation problem is reduced to a problem of graph traversal. Therefore, any graph traversal algorithm can be used for test generation. 
+
+\subsection{Other GUI model representations}
+
+Other than the EFG approach is labeled state transition systems, action words and keywords with the goal to describe a transition model as the Labeled Transition System(LTS). The LTS consists of a set of states and a set of transitions among those states. Action words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
 
 One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.\cite{patternbasedtesting}
 
-online vs offline
-
-\subsection{Existing solutions}
-
-
-\cite{embedded}
+% \cite{embedded}
 
 \chapter{Proposed solution}
-A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should to able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one on the common frameworks(GTK, Qt), however this tools is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. A tool will be developed in language Python3, version 3.6.
+A goal of this work is the development of a tool able to generate automated test cases for GUI applications. The proposed tool should be able to generate test cases mainly from the AT-SPI metadata. The required metadata should be available for a lot of applications, assuming they are using one of the common frameworks(GTK, Qt), however this tool is targeted on applications for GNOME desktop\footnote{https://wiki.gnome.org/Apps}. A tool will be developed in language Python3, version 3.6.
 
-All application are open source and are developed by the community of enthusiasts around the GNOME project. Anyone from the community can fix bugs in applications by sending a merge request with fixes, request a new feature or propose changes with new features. Considering this model of development, there is no future planning nor phase where can can design an abstract model of an application, from which test cases can be derived. But once an application is available, a model can be derived from the AT-SPI metadata. 
+All applications are open source and are developed by the community of enthusiasts around the GNOME project. Anyone from the community can fix bugs in applications by sending a merge request with fixes, request a new feature or propose changes with new features. Considering this model of development, there is no future planning nor phase where one can design an abstract model of an application, from which test cases can be derived. But once an application is available, a model can be derived from the AT-SPI metadata. 
 
 \begin{figure}[hbt]
 	\centering
@@ -249,29 +267,30 @@ All application are open source and are developed by the community of enthusiast
 
 
 \section{Model Extraction and Test Generation}
-traversing the application online
-Many approaches in model-based testing generate test cases from an model of an application, which had been prepared before an actual application was developed. However, for the purposes of this work generation of an abstract model will be skipped and it will rely on the metadata provided by the AT-SPI. 
+Many approaches in model-based testing generate test cases from a model of an application, which had been prepared before an actual application was developed. However, for the purpose of this work, generation of an abstract model will be done in a form of an Even-Flow Graph. The graph will allow us to track executable events in application and form sequences of the events in to the test cases. 
 
-The generation process will work with live application at run-time. It will perform actions to generate sequences of actions which will form test cases. There are several challenges which needs to be addressed during the development process. Theoretically, there will be an infinite amount of sequences of action executed, which can be ineffective. Therefore a maximum amount of actions in one test case needs to be determined. 
+The generation process will work with a live application at run-time. Initially, an application will be scanned for actions that can be performed from the very first state. Then, one of the actions will be selected and performed to reveal new actions that can be added to a sequence. Each action will be followed by a generated assertion of the new application state. There are several challenges which need to be addressed during the development process. Theoretically, there will be an infinite amount of executed sequences of actions, which can be ineffective. Therefore a maximum amount of actions in one test case needs to be determined. 
 
 Furthermore, there will be sequences which will lead to the expected termination of application. These sequences must be detected by checking keywords \textit{Quit} or \textit{Exit}. These steps must also be followed by assertion that application was terminated successfully, without errors. 
 
-A vital part of the generated tests will be assertion of the state of application. At first, it has to be decided which accessibility properties will be checked after execution of actions. One possible approach is to generate assertion for one or multiple nodes which were changed by the executed actions. To make assertions more reliable, the OCR technology can be used to checked text rendered on the screen. Through accessibility, we can extract the text of the node that has changed the state(both \verb|visible| and \verb|showing| properties set to \verb|True|). Then, take a screen shot of the running application and finally, verify that the text is shown on the screen. 
-In general, 
+A vital part of the generated tests will be assertion of the state of application. At first, it has to be decided which accessibility properties will be checked after execution of actions. One possible approach is to generate assertion for one or multiple nodes which were changed by the executed actions. To make assertions more reliable, the OCR technology can be used to verify text rendered on the screen. Through accessibility, we can extract the text of the node that has changed the state(both \verb|visible| and \verb|showing| properties set to \verb|True|). Then, take a screen shot of the running application and finally, verify that the text is shown on the screen. 
+In general, tests case generation process will involve the following steps: 
 
 \begin{enumerate}
-    \item\label{one} application is running, extract an accessibility tree
+    \item\label{one} application is running, extraction of the accessibility tree
     \item filter visible nodes from the tree 
     \item obtain a list of executable actions on visible nodes from previous step
     \item if a tuple(node, action) is listed in already executed action queue, filter it out  
     \item put filtered executable actions and nodes to the execution queue
     \item take the first action from the execution queue, execute it
-    \item append executed steps to .feature file 
-    \item check if the application is still running, check stdout, stderr
+    \item append executed steps to \verb|.feature| file 
+    \item check if the application is still running, check stdout, stderr. other error dialogs
     \item continue from step \ref{one}.
 \end{enumerate}
 
-Test cases will be derived from the application at run-time, meaning that the state of accessible objects in the application will be scanned for possible actions that can be performed on shown nodes. A list of tuples 
+In addition, nodes and executed actions will be stored in a buffer to ensure, that the generation process will not end in a loop. 
+
+Generation process should be as deterministic and systematic as possible. One of the possible algorithm applied for generating the sequences of actions might be depth-first or breadth-first search algorithms. After generation ends, a list of nodes(buttons, text fields, menus, etc.) that weren't included in test should be printed for possible generator adjustments. 
 
 \section{Test Cases and Test Reports}
 Result of the test generation process will be a set of \verb|.feature| files describing test cases in language Gherkin\footnote{https://automationpanda.com/2017/01/26/bdd-101-the-gherkin-language/}. The test cases will be executable in Python's test framework behave. 
@@ -292,7 +311,7 @@ Feature: Start and stop baobab in different ways
     Then baobab should start
 \end{lstlisting}
 
-A test scenario written in language Gherking uses the Given-When-Then format. Each step in a \verb|.feature| file is a decorator to a Python function, which is executed when behave runs the test.\cite{bdd} A step can either contain a description of an action to be performed or an assertion to check verify the actions performed by the test. As shown on example \ref{feature} , test case written in behave is intuitive and easy to understand, which is important for quick re-evaluation of failed test cases. The result of the test execution is an HTML test report \ref{behave_report}.
+A test scenario written in language Gherking uses the Given-When-Then format. Each step in a \verb|.feature| file is a decorator to a Python function, which is executed when behave runs the test.\cite{bdd} A step can either contain a description of an action to be performed or an assertion to verify the actions performed by the test. As shown on example \ref{feature} , test case written in behave is intuitive and easy to understand, which is important for quick re-evaluation of failed test cases. The result of the test execution is an HTML test report \ref{behave_report}.
 
 
 \begin{figure}[hbt]
@@ -302,23 +321,24 @@ A test scenario written in language Gherking uses the Given-When-Then format. Ea
 	\label{behave_report}
 \end{figure}
 
-Since tests are generated in a form of executable scripts, the test cases will be managed through versioning system git. Each application should have a separate repository for the tests. Git offers branching support\footnote{https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell}, which allows to maintain tests for multiple version of applications. When a new version of application with major changes is released, a new test cases covering new features will be generated to a new branch, tagged with the corresponding version number. This should be also advantage when tests will be deployed in CI/CD systems. The test executor will clone the repository with the branch corresponding to the version of the application. After finish of the test execution process, the result are collected as a HTML file. 
+Since tests are generated in a form of executable scripts, the test cases will be managed through versioning system git. Each application should have a separate repository for the tests. Git offers branching support\footnote{https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell}, which allows to maintain tests for multiple versions of applications. When a new version of application with major changes is released, a new test cases covering new features will be generated to a new branch, tagged with the corresponding version number. This should be also advantage when tests will be deployed in CI/CD systems. The test executor will clone the repository with the branch corresponding to the version of the application. After finish of the test execution process, the results are collected as a HTML file. 
 
 \section{Code Coverage Analysis}
 Measurement of the code covered by the generated tests can be evaluated in two ways. 
 The first approach can be based on evaluating the percentage of model, that has been covered by the generated tests. In that case, two values need to be measured separately, to be specific a percentage of actions and a percentage of nodes covered by the generated tests.
 Measuring coverage of action is a common technique used in GUI testing known as event coverage.\cite{NguyenBao2014Gait}
 
-Another possibility is to use a too \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexecuted code. Code coverage analysis can be characterized by the following steps: 
+Another possibility is to use a tool \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexecuted code. Code coverage analysis can be characterized by the following steps: 
 \begin{enumerate}
   \item Find the areas of a program not exercised by the test suite.
   \item Create additional test cases to exercise the dead code, thereby increasing code coverage.
   \item Determine a quantitative measure of code coverage, which is an indirect measure of quality.
 \end{enumerate}
 
-To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file. Measurements can be obtained for any software written in C/C++\cite{gcov}
+To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file. Measurements can be obtained for any software written in C/C++.\cite{gcov}
 
 Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation. However, event coverage should be more important for GUI applications.
 
 
 \chapter{Conclusion}
+The initial part of this work was dedicated to the architecture of the assistive technologies in GNOME environment. 
