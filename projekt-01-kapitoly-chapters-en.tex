@@ -172,7 +172,7 @@ Similarly to OpenCV, Tesseract's OCR engine was tested as an alternative tool fo
 This chapter has been dedicated to the Accessibility technologies in GNOME desktop with a deeper look on implementation, libraries and tools for debugging. Furthermore, technologies that may be able to cover limitations and bugs in accessibility has been evaluated as well. Both OpenCV and Tesseract may help with identification, location and verification of non-accessible elements in applications. Possible disadvantage is a delay caused by taking and processing screenshots of applications that have to be taken on the right time. OpenCV's image matching algorithm can reliably locate prearranged images of icons, labels or whole application windows on the screen. Considering the stable application environment with black text on white background in most of applications, Tesseract is able to detect and reliably locate most of the text content on the screen. Other cases can be covered by image preprocessing done again in OpenCV. Furthermore, both technologies are working with actual application content rendered to users, possibly bringing additional level of verification.
 
 \chapter{Testing Graphical User Interfaces}
-Graphical user interface(GUI) is an interface that makes advantage of the computer's graphics capabilities to make software easier to use.\cite{guidefinition} Graphical applications are developed using sets of windows and widgets. A widget represents a graphical element describing certain behaviour and functionality. User interaction with widgets is generating various events allowing to perform tasks in different ways and therefore achieving the same goal. Despite the fact that they improve usability and flexibility, they also represent a challenge for software testing as testers have to decide whether to check all sequences of events or only a subset. The effort required to test the GUIs can be reduced with automated software testing. Even though there was a significant progress made in automated testing tools over the last decade, manual testing is still the most common technique in practice. However, with a proper automated GUI testing process, more test cases can be executed regularly and more faults can be found within less time.\cite{patternbasedtesting}
+Graphical user interface(GUI) is an interface that makes advantage of the computer's graphics capabilities to make software easier to use.\cite{guidefinition} Graphical applications are developed using sets of windows and widgets. A widget represents a graphical element describing certain behaviour and functionality. User interaction with widgets is generating various events allowing to perform tasks in different ways and therefore achieving the same goal. Despite the fact that they improve usability and flexibility, they also represent a challenge for software testing as testers have to decide whether to check all sequences of events or only a subset. The effort required to test the GUIs can be reduced with automated software testing. Even though there was a significant progress made in automated testing tools over the last decade, manual testing is still the most common technique in practice. However, with a proper automated GUI testing process, more test cases can be executed regularly and more faults can be found within less time.\cite{patternbasedtesting} Generally, building GUI test cases involves selecting sequences of GUI events and describing the expected state of the program after event execution.\cite{NguyenBao2014Gait}
 
 Next several sections are dedicated to various testing techniques used to test GUIs. Variations of both manual and automated testing are discussed, followed by examples of tools using them.  Throughout the chapter a tested application will be referred to as a system under test(SUT).
 
@@ -199,13 +199,22 @@ This category of solutions is often being referred to as Visual GUI Testing. It 
 There are several examples, including the open source tool Sikuli and commercial tool JAutomate. Trivial automation of GUIs via image matching algorithm can be achieved with a Python module named Xpresser. The tool works with a directory of images containing cropped images of widgets. Once the image matching algorithm identifies a location of cropped image on the screen, an intended action can be performed.\cite{xpresser} Xpresser is mostly used for building automated test cases for Linux distribution Ubuntu.
 
 \section{Model-based Testing}
-Model-based testing is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. Ii allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverse the model and produce test cases suitable for automatic execution. 
+Model-based testing is a software testing technique where test cases are generated from a model that describes functional aspects of the SUT. It allows checking the conformity between the implementation and the model of the SUT, with more systematic and automatic approach in the testing process. The test generation phase is based on algorithm that traverse the model and produce test cases suitable for automatic execution. 
+
+\subsection{GUI model representation}
 
 One of many approaches is to create an event-flow graph(EFG) as a representation of GUI model. The idea is to capture the flow of events, with possible coverage of all event interactions available in the UI.  The EFG is comprised of nodes and edges. An edge from 1 node to another means that the second note can be executed immediately after the first one. The EFT edges are not labeled and they do not have states. 
 
 Other approach uses labeled state transition systems, action words and keywords, with the goal to describe a transition model as an Labeled Transition System(LTS). An LTS consists of a set of states and a set of transitions among those states. Actions words describe user events with a high level of abstraction and keywords correspond to key presses and menu navigation. The goal is to provide abstract tools, so test cases can be designed even before the system implementation. 
 
-One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.
+One of the most used solutions for designing models are Finite state machines. This approach is also solving certain limitation of EFG approach. The EFGs are not able to model certain scenarios where GUI objects are modified dynamically. A case where the visibility of GUI object depends on another object's state is a good example. Additionally, state-charts models can be used for both modeling and generation of test cases for GUIs.\cite{patternbasedtesting}
+
+online vs offline
+
+\subsection{Existing solutions}
+
+
+
 
 \cite{embedded}
 
@@ -233,17 +242,18 @@ behave - git
 \section{Code Coverage Analysis}
 Measurement of the code covered by the generated tests can be evaluated in two ways. 
 The first approach can be based on evaluating the percentage of model, that has been covered by the generated tests. In that case, two values need to be measured separately, to be specific a percentage of actions and a percentage of nodes covered by the generated tests.
+Measuring coverage of action is a common technique used in GUI testing known as event coverage.\cite{NguyenBao2014Gait}
 
-Another possibility is to use a too \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexercised code. Code coverage analysis can be characterized by the following steps: 
+Another possibility is to use a too \verb|gcov|, which is standart part of the GNU development tools. The purpose of the tool is Code Coverage Analysis and it was designed to find dead or unexecuted code. Code coverage analysis can be characterized by the following steps: 
 \begin{itemize}
   \item Find the areas of a program not exercised by the test suite.
   \item Create additional test cases to exercise the dead code, thereby increasing code coverage.
   \item Determine a quantitative measure of code coverage, which is an indirect measure of quality.
 \end{itemize}
 
-and can be used with any software written in C/C++. To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file.\cite{gcov}
+To obtain a measurement of the code coverage, it's required to compile the application with \verb|gcc| and two extra parameters \verb|-fprofile-arcs| and \verb|-ftestcoverage|. Running the compiled binary with a \verb|gcov| tool will yield a percentage of the executed code located in source file. Measurements can be obtained for any software written in C/C++\cite{gcov}
 
-Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation.  
+Comparing results measured by the \verb|gcov| should provide a suitable method for evaluating results achieved by the generated tests or to compare multiple methods of test generation. However, event coverage should be more important for GUI applications.
 
 
 
