@@ -1,0 +1,38 @@
+vysvetlit skratky - zoznam skratiek na koniec
+intro posledny odstavec finally
+
+chapter na introduction
+
+
+Chapter 2 spomenut regresie
+2.1 - 3 types odrazky
+- spomenut fuzzy testing
+
+2.2 + introduction kapitola, co je cielom testovania
+
+
+2.3 preklep xamples
+konzistentne poznamky pod ciarou
+
+GTK zdoraznit, ze je to GTK3 nie starsie
+
+3.2 nekonzistetne dconf a gsettings
+
+ocislovat gsettingsodkazujem na diagram ale je to Figure
+
+Figure 3.2, 3.3, 3.4 poloha obrazkov a odkazat na neho
+
+
+3.4.1 dogtail raz z malym raz velkym 
+
+
+ipython vs Ipython3 
+
+
+
+3.6 - zdoraznit problematicke aktualnych udrziavanie screenshotov
+
+4.1 - .feature odkazat sa na dalsiu kapitolu 4.2
+4.2 - poznamka pod ciarou behave
+4.3 - vala je tiez gcov, appky v pythone preskumat nejaky iny code coverage
+
